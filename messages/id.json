@@ -1,0 +1,92 @@
+{
+  "meta": { "siteName": "GreenPoly", "siteTagline": "Pelet Daur Ulang ABS · HIPS · PP · GPPS dari Pabrik Kecil di Ningbo" },
+  "nav": { "home": "Beranda", "products": "Produk", "about": "Tentang", "quality": "Kualitas", "contact": "Kontak", "getQuote": "Minta Penawaran", "menu": "Menu" },
+  "home": {
+    "heroBadge": "Pabrik keluarga kecil · Langsung dari pemilik · Tanpa perantara",
+    "heroTitle1": "Pelet Daur Ulang ABS · HIPS", "heroTitle2": "PP · GPPS", "heroTitle3": "dari Pabrik Kecil di Ningbo",
+    "heroSubtitle": "Kami mengumpulkan sisa off-spec bersih dan potongan tepi dari eksportir peralatan rumah tangga kecil ternama di Ningbo, lalu mencuci dan mencetak ulang menjadi pelet di bengkel kami sendiri. Sumber bahan stabil, harga wajar, Anda bicara langsung dengan bos. MOQ 1 ton.",
+    "ctaSamples": "Minta Sampel Gratis", "ctaBrowse": "Lihat Produk",
+    "trustQuote": "Bos balas dalam 24 jam", "trustDocs": "COA gratis tiap batch", "trustShipping": "Tersedia FOB Ningbo / CIF",
+    "statsYears": "Tahun di Bidang Ini", "statsCapacity": "Output Bulanan", "statsCountries": "Negara Tujuan Kirim", "statsMoq": "MOQ Rendah", "statsReply": "Bos Balas Sendiri", "statsLines": "Lini Resin",
+    "productsTag": "Produk Kami", "productsTitle": "Empat Lini Resin, Spesifikasi Jujur", "productsSubtitle": "Kami tidak berpura-pura bisa segalanya. Hanya ABS, HIPS, PP dan GPPS — tapi dikerjakan dengan benar.",
+    "whyTag": "Kenapa Beli dari Kami", "whyTitle": "Yang Bisa Dilakukan Pabrik Kecil tapi Ditolak Pabrik Besar", "whySubtitle": "Kami bukan yang terbesar. Kami yang membalas WhatsApp Anda Minggu malam dan mengirim order percobaan 3 ton Anda.",
+    "why1Title": "Sumber bersih yang bisa dilacak", "why1Body": "Bahan baku kami berasal dari eksportir peralatan rumah tangga ternama di Ningbo — komponen off-spec, potongan tepi, sisa runner. Bahan yang sama tiap bulan, bukan campuran sampah acak.",
+    "why2Title": "Bicara langsung dengan bos", "why2Body": "Tanpa dioper-oper tim sales. WhatsApp langsung pemiliknya, dapat harga asli dan lead time asli. Kami balas dalam 24 jam, sering lebih cepat.",
+    "why3Title": "MOQ 1 ton, fleksibel betulan", "why3Body": "Pabrik besar tidak mau kasih harga di bawah 20 ton. Kami mau. Campur dua grade dalam satu kontainer? Boleh. Sesuaikan warna? Boleh. Minta sampel 5 kg dulu? Boleh.",
+    "why4Title": "Harga jujur, tanpa biaya tersembunyi", "why4Body": "Penawaran sudah termasuk pengemasan, pemuatan, dan penanganan di pelabuhan Ningbo. Tidak ada biaya kejutan sebelum B/L dirilis.",
+    "industriesTag": "Aplikasi", "industriesTitle": "Ke Mana Pelet Kami Berakhir",
+    "industries": { "appliance": "Peralatan Rumah Tangga", "electronics": "Elektronik", "automotive": "Suku Cadang Otomotif", "disposables": "Peralatan Makan Sekali Pakai", "packaging": "Kemasan", "stationery": "Alat Tulis & Mainan" },
+    "tbMoq": "MOQ 1 Ton", "tbMoqSub": "Tanpa minimum 20 ton", "tbSamples": "Sampel Gratis", "tbSamplesSub": "1–3 kg untuk uji di lini Anda", "tbCoa": "COA per Batch", "tbCoaSub": "Terdokumentasi tiap pengiriman", "tbReply": "Balas 24 Jam", "tbReplySub": "Pemilik di WhatsApp",
+    "portsTag": "Logistik", "portsTitle": "Kami Kirim ke Pelabuhan Anda", "portsSubtitle": "Konsolidasi LCL rutin dan muatan satu kontainer penuh ke gerbang-gerbang utama Asia Tenggara. Beri tahu pelabuhan Anda — kami beri harga CIF sampai pelabuhan.", "portsNote": "Kami juga kirim ke seluruh dunia — cukup beri tahu pelabuhan tujuan Anda.",
+    "ctaTitle": "Siap untuk Penawaran Sungguhan?", "ctaBody": "Beri tahu kami jenis resin, MFI, warna, dan volume bulanan yang Anda butuhkan. Bos akan balas di WhatsApp dalam 24 jam dengan harga FOB Ningbo dan stok terkini.", "ctaButton": "Kirim Permintaan"
+  },
+  "products": {
+    "title": "Rangkaian Produk Kami", "subtitle": "Empat keluarga resin inti, dua puluh grade. Ketuk produk mana pun untuk melihat spesifikasi, MFI, densitas, dan stok terkini. Setiap grade punya tombol \"Tanya Grade Ini\" langsung.",
+    "viewAll": "Semua Grade {category}", "from": "Mulai dari", "viewSpecs": "Lihat spesifikasi",
+    "bestSeller": "Terlaris", "highDemand": "Permintaan Tinggi", "highImpact": "Impact Tinggi", "transparent": "Bening Kristal", "foodGrade": "Tersedia Food-Grade",
+    "inquireGrade": "Tanya Grade Ini", "gradesHint": "Pilih grade tertentu — formulir permintaan akan terisi otomatis dengan kode, MFI, dan aplikasinya. Kami balas dengan harga FOB Ningbo terkini.",
+    "sourcingTag": "Dari mana asalnya", "sourcingBody": "Bahan baku dikumpulkan dari pabrik ekspor peralatan rumah tangga kecil ternama di Ningbo: hasil injeksi off-spec, potongan tepi, sisa sprue dan runner. Sumber yang sama tiap bulan — bukan sampah campur acak.",
+    "spec": { "grade": "Grade", "color": "Warna", "mfi": "MFI (g/10min)", "density": "Densitas", "process": "Proses", "application": "Aplikasi", "price": "Harga (USD/T)", "quickFacts": "Fakta Singkat", "priceRange": "Harga", "moq": "MOQ", "leadTime": "Lead Time", "payment": "Pembayaran", "packaging": "Kemasan", "origin": "Asal" },
+    "requestQuote": "Minta Penawaran", "requestSample": "Minta Sampel Gratis", "whatsapp": "WhatsApp", "availableGrades": "Grade Tersedia", "applications": "Aplikasi",
+    "customTitle": "Butuh Campuran Khusus?", "customBody": "Masterbatch warna, pengisi talc / CaCO3, stabilizer UV, impact modifier — kami produksi batch khusus kecil mulai 3 ton.",
+    "readyTitle": "Siap Memesan?", "readyBody": "Kirim MFI, warna, volume, dan pelabuhan tujuan yang Anda inginkan. Penawaran dalam 24 jam, langsung dari bos."
+  },
+  "about": {
+    "badge": "Tentang GreenPoly", "title1": "Bengkel Kecil di Ningbo.", "title2": "Bahan Jujur. Langsung dari Pemilik.",
+    "subtitle": "Kami bukan pabrik 15.000 ton. Kami bengkel keluarga kecil di Ningbo yang mengubah sisa peralatan rumah tangga kecil yang bersih menjadi pelet daur ulang yang andal, satu kontainer setiap kali.",
+    "storyTitle": "Dari Lahan Samping Menjadi Lini Pelet",
+    "storyP1": "GreenPoly bermula sebagai lahan samping di sebelah pabrik perakitan peralatan kecil di Ningbo. Kami mengumpulkan hasil injeksi off-spec, sisa runner, dan potongan tepi mereka, memprosesnya ulang lewat extruder sederhana, lalu menjual peletnya ke pabrik mainan dan alat tulis lokal.",
+    "storyP2": "Sepuluh tahun kemudian kami tetap kecil — satu lini pelet untuk ABS / HIPS, satu untuk PP, satu lini berbagi untuk GPPS. Total sekitar 300 ton per bulan. Tapi sumber bahannya tetap sama: sisa yang bersih, terpisah, dan bisa dilacak dari pabrik ekspor peralatan rumah tangga ternama di sekitar Beilun dan Cixi.",
+    "storyP3": "Yang berubah adalah sisi pembeli. Kini kami mengirim kontainer ke compounder, pencetak injeksi, dan trader di Vietnam, Indonesia, India, Pakistan, Türkiye, Mesir, dan Uni Eropa. Bengkel yang sama, bos yang sama di WhatsApp, bahan yang sama — hanya dikemas untuk dunia.",
+    "sourcingTag": "Bedanya Kami", "sourcingTitle": "Dari Mana Pelet Kami Sebenarnya Berasal",
+    "sourcingP1": "Kebanyakan \"pelet daur ulang\" di Alibaba dicampur dari limbah warna-campur, grade-campur acak — itulah sebabnya MFI-nya berayun 30% antar batch. Kami tidak bekerja seperti itu.",
+    "sourcingP2": "Bahan baku kami dikontrak dari empat pabrik ekspor peralatan rumah tangga kecil ternama di Ningbo. Mereka membuat produk untuk peritel Eropa dan Amerika Utara — ketel, kipas, penyedot debu, pengering rambut. Komponen off-spec dan potongan tepi yang mereka hasilkan bersih, satu grade, satu warna, dan bisa dilacak ke OEM-nya.",
+    "sourcingPoint1": "Satu sumber per batch — Anda tidak dapat campuran acak.", "sourcingPoint2": "Sisa OEM off-spec = grade resin aslinya memang sudah berkualitas baik sejak awal.", "sourcingPoint3": "Warna dipisah sejak sumber — kami tidak menutupi kontaminasi dengan pewarna.", "sourcingPoint4": "MFI biasanya berayun kurang dari 12% antar batch pada kode grade yang sama.",
+    "stat1Label": "Output Bulanan", "stat1Body": "Sekitar 300 ton pelet dari keempat lini resin.", "stat2Label": "Lini Resin", "stat2Body": "ABS, HIPS, PP, GPPS — fokus dan konsisten.", "stat3Label": "Waktu Balas Bos", "stat3Body": "WhatsApp / email dibalas dalam 24 jam, biasanya jauh lebih cepat.",
+    "ctaTitle": "Datang Lihat Bengkelnya", "ctaBody": "Berkunjung ke Ningbo? Kami jemput di bandara. Kalau tidak, video call juga bisa — kami tunjukkan lininya untuk Anda.", "ctaButton": "Bicara dengan Bos"
+  },
+  "quality": {
+    "badge": "Kualitas yang Benar-Benar Bisa Kami Pertanggungjawabkan", "title1": "QC Jujur.", "title2": "Dokumen Asli. Tanpa Sandiwara Pemasaran.",
+    "subtitle": "Kami pabrik kecil, jadi kami tidak berpura-pura punya chain-of-custody GRS dan letter of no objection FDA. Yang kami punya: bahan bersih yang bisa dilacak, COA level batch, uji ulang pihak ketiga SGS (opsional), dan bos yang mengangkat telepon sendiri.",
+    "promisesTag": "Enam Hal yang Kami Janjikan", "promisesTitle": "Yang Anda Dapat di Tiap Kontainer",
+    "p1Title": "COA per batch — tiap pengiriman", "p1Body": "MFI, densitas, kadar abu diuji sendiri pada tiap batch produksi. PDF dikirim ke email Anda sebelum kontainer meninggalkan pelabuhan.",
+    "p2Title": "Uji pihak ketiga SGS (opsional)", "p2Body": "Untuk order pertama atau aplikasi sensitif, kami kirim sampel ke SGS Ningbo dan teruskan laporannya. Anda bayar biaya lab, kami urus logistiknya.",
+    "p3Title": "Bahan bisa dilacak", "p3Body": "Kami bisa menyebutkan OEM peralatan rumah tangga asal sisa tiap batch. Tanpa bahan misterius. Foto tumpukan sumber tersedia atas permintaan.",
+    "p4Title": "Pelabelan berkode grade", "p4Body": "Setiap karung 25 kg dan FIBC 1 ton mencantumkan kode grade, nomor batch, tanggal produksi, dan rentang MFI. Tanpa \"PP campur\" tanpa label.",
+    "p5Title": "Kecermatan pengemasan kontainer", "p5Body": "FIBC diikat ke palet, desikan dimasukkan untuk angkutan laut, lantai kontainer dilapisi agar bersih saat transfer. Kedengaran mendasar — tapi banyak pabrik kecil melewatkannya.",
+    "p6Title": "Kebijakan bertanggung jawab", "p6Body": "Jika MFI suatu batch di luar toleransi yang kami nyatakan, kami kirim karung pengganti pada pengiriman berikutnya atau refund proporsional. Tercantum dalam ketentuan PI kami.",
+    "processTag": "Dari Sisa Menjadi Pelet", "processTitle": "Alur Bengkel Lima Langkah",
+    "s1Title": "Ambil dari sumber", "s1Body": "Kami ambil off-spec & potongan tepi langsung dari pabrik peralatan rumah tangga Ningbo yang berkontrak — per grade, per warna, tak pernah dicampur.",
+    "s2Title": "Sortir & cuci", "s2Body": "Sortir manual + pengapungan densitas untuk kasus sulit. Cuci dingin untuk debu permukaan, cuci panas hanya bila perlu.",
+    "s3Title": "Cacah & keringkan", "s3Body": "Digranulasi jadi serpih ~6 mm, dikeringkan dengan udara panas hingga kelembapan di bawah 0,3% sebelum diekstrusi.",
+    "s4Title": "Ekstrusi & pelletize", "s4Body": "Extruder single-screw berventilasi dengan filter 80-mesh, pemotong pelet strand berpendingin air, opsi twin-screw untuk grade berpengisi.",
+    "s5Title": "QC & pengarungan", "s5Body": "MFI / densitas / abu disampel per batch. Karung anyaman PP 25 kg atau FIBC 1 ton. Label grade disegel sebelum disimpan.",
+    "honestTag": "Pengungkapan Jujur", "honestTitle": "Yang BUKAN Kami",
+    "honestBody": "Kami tidak memegang sertifikat GRS, FDA, RoHS, atau REACH SVHC — audit itu biayanya lebih besar dari yang bisa ditanggung pabrik kecil seperti kami, dan kami lebih suka meneruskan penghematan itu ke Anda lewat harga. Jika pelanggan akhir Anda butuh dokumen tersebut, kami arahkan Anda ke pabrik bersertifikat. Jika mereka hanya butuh resin daur ulang yang bersih dan andal dengan harga wajar — itu persis yang kami buat.",
+    "ctaTitle": "Mau Lembar QC untuk Grade Anda?", "ctaBody": "Beri tahu kami jenis resin dan tujuan pemakaian — kami kirim COA 3 batch terakhir supaya Anda bisa menilai sendiri konsistensinya.", "ctaButton": "Minta Sampel COA"
+  },
+  "contact": {
+    "title": "Bicara dengan Bos", "subtitle": "WhatsApp, email, atau formulir di bawah — ketiganya sampai ke pemilik. Balas dalam 24 jam, biasanya jauh lebih cepat via WhatsApp.",
+    "directContact": "Kontak Langsung", "email": "Email", "whatsappLabel": "WhatsApp / WeChat", "office": "Kantor", "address": "Alamat Bengkel",
+    "responseTitle": "Waktu Respons", "responseBody": "WhatsApp: biasanya dibalas dalam satu jam pada jam kerja Ningbo. Email & formulir: dalam 24 jam kerja.",
+    "hoursTitle": "Jam Kerja", "hoursBody": "Senin – Sabtu, 09.00 – 19.00 (GMT+8). WhatsApp juga dicek hari Minggu.",
+    "formTitle": "Minta Penawaran", "formSubtitle": "Makin detail yang Anda beri, makin cepat kami memberi penawaran.",
+    "form": {
+      "name": "Nama Anda", "company": "Perusahaan", "email": "Email", "phone": "WhatsApp / Telepon", "country": "Negara", "port": "Pelabuhan Tujuan",
+      "product": "Produk yang Diminati", "productPlaceholder": "-- Pilih produk --", "volume": "Perkiraan Volume", "volumePlaceholder": "-- Pilih volume --",
+      "volumeOpts": { "sample": "Hanya sampel (1–3 kg)", "small": "1–5 ton (LCL)", "medium": "5–20 ton", "large": "20–100 ton (1+ kontainer)", "monthly": "100+ ton / bulan" },
+      "incoterms": "Incoterms", "message": "Ceritakan Lebih Lanjut", "messagePh": "Target MFI, warna, aplikasi, persyaratan khusus...",
+      "submit": "Kirim Permintaan", "submitting": "Mengirim...", "successTitle": "Terima kasih!", "successBody": "Permintaan Anda sudah masuk. Bos akan balas dalam 24 jam, biasanya lebih cepat via WhatsApp.",
+      "errorTitle": "Maaf, terjadi kesalahan.", "errorBody": "Silakan WhatsApp kami di +86 183 5297 8082 atau email ke richardq0714@gmail.com.", "prefillNotice": "Terisi otomatis untuk grade:"
+    }
+  },
+  "floating": {
+    "title": "Bicara dengan Bos", "subtitle": "WhatsApp · Email · Formulir Permintaan", "openLabel": "Buka opsi kontak", "close": "Tutup",
+    "waButton": "WhatsApp Bos", "waReply": "~1 jam balas", "waPrefill": "Halo, saya melihat pelet daur ulang Anda di greenpoly.com dan ingin minta penawaran.",
+    "zaloButton": "Chat via Zalo", "lineButton": "Chat via LINE", "emailButton": "Email Kami", "emailSubject": "Permintaan dari website GreenPoly", "formButton": "Buka Formulir Permintaan", "footnote": "Balas dalam 24 jam atau jadi tanggungan bos"
+  },
+  "footer": {
+    "tagline": "Bengkel keluarga kecil di Ningbo yang mengubah sisa peralatan rumah tangga bersih menjadi pelet daur ulang ABS, HIPS, PP, dan GPPS — langsung ke produsen global sejak 2014.",
+    "productsHeading": "Produk", "companyHeading": "Perusahaan", "contactHeading": "Kontak", "copyright": "© {year} GreenPoly Recycling Co., Ltd. Semua hak dilindungi."
+  }
+}

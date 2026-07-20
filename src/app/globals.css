@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand: #047857;
+  --brand-dark: #065f46;
+  --brand-light: #d1fae5;
+  --accent: #f59e0b;
+  --sand: #faf9f5;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+body {
+  color: #14211c;
+  background: var(--sand);
+  font-family: var(--font-sans), var(--font-thai), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Thai UI reads better with a touch more line-height and no italics. */
+:lang(th) {
+  line-height: 1.65;
+}
+
+@layer components {
+  /* ── Buttons ───────────────────────────────────────────── */
+  .btn-primary {
+    @apply inline-flex items-center justify-center bg-brand-700 hover:bg-brand-800 text-white font-semibold px-6 py-3 rounded-xl transition shadow-soft;
+  }
+  /* Warm conversion CTA — the "money" button (Get Quote / WhatsApp) */
+  .btn-accent {
+    @apply inline-flex items-center justify-center gap-2 bg-accent hover:bg-accent-dark text-forest-900 font-bold px-6 py-3 rounded-xl transition shadow-soft;
+  }
+  .btn-outline {
+    @apply inline-flex items-center justify-center border-2 border-brand-700 text-brand-700 hover:bg-brand-700 hover:text-white font-semibold px-6 py-3 rounded-xl transition;
+  }
+
+  /* ── Surfaces ──────────────────────────────────────────── */
+  .gradient-hero {
+    background:
+      radial-gradient(1100px 500px at 85% -10%, rgba(245, 158, 11, 0.18), transparent 60%),
+      radial-gradient(900px 600px at 0% 110%, rgba(16, 185, 129, 0.25), transparent 55%),
+      linear-gradient(150deg, #052e24 0%, #065f46 45%, #047857 100%);
+  }
+  .section-tag {
+    @apply inline-block text-brand-700 font-bold uppercase text-xs tracking-[0.15em];
+  }
+
+  /* ── Cards ─────────────────────────────────────────────── */
+  .card {
+    @apply bg-white rounded-2xl border border-slate-100 shadow-card;
+  }
+  .product-card {
+    @apply border border-slate-100 rounded-2xl bg-white shadow-card transition-all duration-300;
+  }
+  .product-card:hover {
+    @apply -translate-y-1.5 shadow-soft border-brand-600/40;
+  }
+
+  /* ── Chips & badges ────────────────────────────────────── */
+  .trust-chip {
+    @apply inline-flex items-center gap-1.5 text-sm font-medium;
+  }
+  .cert-badge {
+    @apply inline-flex items-center bg-white border border-slate-200 px-4 py-2 rounded-full text-sm font-medium text-slate-600;
+  }
+
+  /* ── Spec table ────────────────────────────────────────── */
+  .spec-table th {
+    @apply bg-brand-50 text-left px-4 py-3 font-semibold text-brand-900;
+  }
+  .spec-table td {
+    @apply px-4 py-3 border-b border-slate-100;
+  }
+  .spec-table tr:hover td {
+    @apply bg-sand;
+  }
+}

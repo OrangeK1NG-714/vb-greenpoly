@@ -1,0 +1,92 @@
+{
+  "meta": { "siteName": "GreenPoly", "siteTagline": "Hạt nhựa tái sinh ABS · HIPS · PP · GPPS từ một xưởng nhỏ ở Ningbo" },
+  "nav": { "home": "Trang chủ", "products": "Sản phẩm", "about": "Giới thiệu", "quality": "Chất lượng", "contact": "Liên hệ", "getQuote": "Nhận báo giá", "menu": "Menu" },
+  "home": {
+    "heroBadge": "Xưởng gia đình nhỏ · Làm việc trực tiếp với chủ xưởng · Không qua trung gian",
+    "heroTitle1": "Hạt nhựa tái sinh ABS · HIPS", "heroTitle2": "PP · GPPS", "heroTitle3": "từ một xưởng nhỏ ở Ningbo",
+    "heroSubtitle": "Chúng tôi thu gom hàng lỗi quy cách sạch và biên nhựa cắt thừa từ các nhà xuất khẩu đồ gia dụng nhỏ có tiếng ở Ningbo, rồi tự rửa và tạo hạt lại ngay tại xưởng. Nguồn đầu vào ổn định, giá phải chăng, bạn làm việc trực tiếp với chủ xưởng. MOQ 1 tấn.",
+    "ctaSamples": "Yêu cầu mẫu miễn phí", "ctaBrowse": "Xem sản phẩm",
+    "trustQuote": "Chủ xưởng trả lời trong vòng 24h", "trustDocs": "Tặng COA cho mỗi lô hàng", "trustShipping": "Có FOB Ningbo / CIF",
+    "statsYears": "Năm trong nghề", "statsCapacity": "Sản lượng hàng tháng", "statsCountries": "Quốc gia đã xuất hàng", "statsMoq": "MOQ thấp", "statsReply": "Chủ xưởng trả lời", "statsLines": "Dòng nhựa",
+    "productsTag": "Sản phẩm của chúng tôi", "productsTitle": "Bốn dòng nhựa, thông số trung thực", "productsSubtitle": "Chúng tôi không tỏ ra làm được tất cả. Chỉ ABS, HIPS, PP và GPPS — nhưng làm cho tốt.",
+    "whyTag": "Vì sao mua hàng của chúng tôi", "whyTitle": "Điều một xưởng nhỏ làm được mà nhà máy lớn thì không", "whySubtitle": "Chúng tôi không phải lớn nhất. Chúng tôi là người bắt máy WhatsApp của bạn vào tối Chủ nhật và giao đơn dùng thử 3 tấn của bạn.",
+    "why1Title": "Nguồn sạch, truy được gốc", "why1Body": "Nguyên liệu đầu vào của chúng tôi đến từ các nhà xuất khẩu đồ gia dụng có tên tuổi ở Ningbo — chi tiết lỗi quy cách, biên nhựa cắt thừa, phế liệu cuống rót. Cùng một loại vật liệu mỗi tháng, không phải hỗn hợp bãi rác ngẫu nhiên.",
+    "why2Title": "Làm việc trực tiếp với chủ xưởng", "why2Body": "Không phải chuyền qua chuyền lại đội sale. Nhắn WhatsApp cho chủ xưởng, nhận giá thật và thời gian giao hàng thật. Chúng tôi trả lời trong vòng 24h, thường là nhanh hơn.",
+    "why3Title": "MOQ 1 tấn, linh hoạt thật sự", "why3Body": "Nhà máy lớn sẽ không báo giá cho bạn dưới 20 tấn. Chúng tôi thì có. Trộn hai loại trong một container? Được. Chỉnh màu? Được. Lấy mẫu 5 kg trước? Được.",
+    "why4Title": "Giá trung thực, không phí ẩn", "why4Body": "Báo giá đã bao gồm đóng gói, bốc xếp, và xử lý tại cảng Ningbo. Không phát sinh bất ngờ trước khi thả B/L.",
+    "industriesTag": "Ứng dụng", "industriesTitle": "Hạt nhựa của chúng tôi đi về đâu",
+    "industries": { "appliance": "Đồ gia dụng", "electronics": "Điện tử", "automotive": "Phụ tùng ô tô", "disposables": "Đồ dùng ăn uống dùng một lần", "packaging": "Bao bì", "stationery": "Văn phòng phẩm & đồ chơi" },
+    "tbMoq": "MOQ 1 tấn", "tbMoqSub": "Không đòi tối thiểu 20 tấn", "tbSamples": "Mẫu miễn phí", "tbSamplesSub": "1–3 kg để thử trên dây chuyền của bạn", "tbCoa": "COA theo lô", "tbCoaSub": "Có giấy tờ cho mỗi lô hàng", "tbReply": "Trả lời trong 24h", "tbReplySub": "Chủ xưởng trực WhatsApp",
+    "portsTag": "Vận chuyển", "portsTitle": "Chúng tôi giao đến cảng của bạn", "portsSubtitle": "Gom hàng lẻ LCL định kỳ và hàng nguyên container đến các cảng chính của Đông Nam Á. Cho chúng tôi biết cảng của bạn — chúng tôi báo giá CIF giao tận cảng.", "portsNote": "Chúng tôi cũng giao đi khắp thế giới — chỉ cần cho biết cảng đích của bạn.",
+    "ctaTitle": "Sẵn sàng nhận báo giá thật chứ?", "ctaBody": "Cho chúng tôi biết loại nhựa, MFI, màu sắc và khối lượng hàng tháng bạn cần. Chủ xưởng sẽ trả lời trên WhatsApp trong vòng 24 giờ kèm giá FOB Ningbo và tồn kho hiện tại.", "ctaButton": "Gửi yêu cầu"
+  },
+  "products": {
+    "title": "Danh mục sản phẩm", "subtitle": "Bốn họ nhựa cốt lõi, hai mươi cấp loại. Nhấn vào bất kỳ sản phẩm nào để xem thông số, MFI, tỷ trọng và tồn kho hiện tại. Mỗi cấp loại đều có nút \"Hỏi về cấp loại này\" riêng.",
+    "viewAll": "Tất cả cấp loại {category}", "from": "Từ", "viewSpecs": "Xem thông số",
+    "bestSeller": "Bán chạy nhất", "highDemand": "Nhu cầu cao", "highImpact": "Chịu va đập cao", "transparent": "Trong suốt như pha lê", "foodGrade": "Có loại đạt chuẩn thực phẩm",
+    "inquireGrade": "Hỏi về cấp loại này", "gradesHint": "Chọn một cấp loại cụ thể — mẫu yêu cầu sẽ được điền sẵn mã, MFI và ứng dụng. Chúng tôi sẽ trả lời kèm giá FOB Ningbo hiện tại.",
+    "sourcingTag": "Nguồn gốc từ đâu", "sourcingBody": "Nguyên liệu đầu vào được thu gom từ các nhà máy xuất khẩu đồ gia dụng nhỏ có tiếng ở Ningbo: mẻ ép lỗi quy cách, biên nhựa cắt thừa, phế liệu cuống rót và kênh dẫn. Cùng một nguồn mỗi tháng — không phải rác trộn ngẫu nhiên.",
+    "spec": { "grade": "Cấp loại", "color": "Màu sắc", "mfi": "MFI (g/10min)", "density": "Tỷ trọng", "process": "Gia công", "application": "Ứng dụng", "price": "Giá (USD/T)", "quickFacts": "Thông tin nhanh", "priceRange": "Giá", "moq": "MOQ", "leadTime": "Thời gian giao hàng", "payment": "Thanh toán", "packaging": "Đóng gói", "origin": "Xuất xứ" },
+    "requestQuote": "Yêu cầu báo giá", "requestSample": "Yêu cầu mẫu miễn phí", "whatsapp": "WhatsApp", "availableGrades": "Cấp loại có sẵn", "applications": "Ứng dụng",
+    "customTitle": "Cần pha trộn theo yêu cầu?", "customBody": "Masterbatch màu, độn talc / CaCO3, ổn định UV, phụ gia tăng va đập — chúng tôi chạy các mẻ theo yêu cầu số lượng nhỏ từ 3 tấn.",
+    "readyTitle": "Sẵn sàng đặt hàng?", "readyBody": "Gửi cho chúng tôi MFI mục tiêu, màu sắc, khối lượng và cảng đích. Báo giá trong vòng 24 giờ, trực tiếp từ chủ xưởng."
+  },
+  "about": {
+    "badge": "Về GreenPoly", "title1": "Một xưởng nhỏ ở Ningbo.", "title2": "Vật liệu trung thực. Làm việc trực tiếp với chủ xưởng.",
+    "subtitle": "Chúng tôi không phải nhà máy 15.000 tấn. Chúng tôi là một xưởng gia đình nhỏ ở Ningbo, biến phế liệu đồ gia dụng nhỏ sạch thành hạt nhựa tái sinh đáng tin cậy, từng container một.",
+    "storyTitle": "Từ một khoảng sân bên hông đến một dây chuyền tạo hạt hoàn chỉnh",
+    "storyP1": "GreenPoly khởi đầu từ một khoảng sân bên hông một nhà máy lắp ráp đồ gia dụng nhỏ ở Ningbo. Chúng tôi thu gom các mẻ ép lỗi quy cách, phế liệu cuống rót và biên nhựa cắt thừa của họ, cho chạy lại qua một máy đùn cơ bản, rồi bán hạt nhựa cho các xưởng đồ chơi và văn phòng phẩm địa phương.",
+    "storyP2": "Mười năm sau chúng tôi vẫn nhỏ — một dây chuyền tạo hạt cho ABS / HIPS, một cho PP, một dây chuyền dùng chung cho GPPS. Tổng cộng khoảng 300 tấn mỗi tháng. Nhưng nguồn đầu vào vẫn giữ nguyên: phế liệu sạch, được phân loại, truy được gốc từ các nhà máy xuất khẩu đồ gia dụng có tên tuổi quanh Beilun và Cixi.",
+    "storyP3": "Điều thay đổi là phía người mua. Ngày nay chúng tôi giao container cho các nhà pha trộn, xưởng ép phun và thương nhân ở Việt Nam, Indonesia, Ấn Độ, Pakistan, Türkiye, Ai Cập và EU. Vẫn xưởng đó, vẫn chủ xưởng đó trên WhatsApp, vẫn nguyên liệu đầu vào đó — chỉ là được đóng gói cho cả thế giới.",
+    "sourcingTag": "Điểm khác biệt của chúng tôi", "sourcingTitle": "Hạt nhựa của chúng tôi thực sự đến từ đâu",
+    "sourcingP1": "Phần lớn \"hạt nhựa tái sinh\" trên Alibaba được trộn từ rác lẫn màu, lẫn cấp loại ngẫu nhiên — đó là lý do MFI dao động tới 30% giữa các lô. Chúng tôi không làm kiểu đó.",
+    "sourcingP2": "Nguyên liệu đầu vào của chúng tôi được ký hợp đồng từ bốn nhà máy xuất khẩu đồ gia dụng nhỏ có tiếng ở Ningbo. Họ sản xuất cho các nhà bán lẻ châu Âu và Bắc Mỹ — ấm đun nước, quạt, máy hút bụi, máy sấy tóc. Các chi tiết lỗi quy cách và biên nhựa cắt thừa họ tạo ra đều sạch, cùng một cấp loại, cùng một màu, và truy được về đơn vị OEM.",
+    "sourcingPoint1": "Một nguồn duy nhất cho mỗi lô — bạn không nhận phải đầu vào trộn ngẫu nhiên.", "sourcingPoint2": "Phế liệu OEM lỗi quy cách = cấp nhựa gốc vốn đã có chất lượng tốt ngay từ đầu.", "sourcingPoint3": "Màu được phân loại ngay tại nguồn — chúng tôi không nhuộm đè lên nhiễm bẩn.", "sourcingPoint4": "MFI thường dao động dưới 12% giữa các lô trên cùng một mã cấp loại.",
+    "stat1Label": "Sản lượng hàng tháng", "stat1Body": "Khoảng 300 tấn hạt nhựa trên cả bốn dòng nhựa.", "stat2Label": "Dòng nhựa", "stat2Body": "ABS, HIPS, PP, GPPS — tập trung và ổn định.", "stat3Label": "Thời gian chủ xưởng trả lời", "stat3Body": "WhatsApp / email được trả lời trong vòng 24h, thường là nhanh hơn nhiều.",
+    "ctaTitle": "Ghé thăm xưởng nhé", "ctaBody": "Có dịp đến Ningbo? Chúng tôi sẽ đón bạn ở sân bay. Nếu không, gọi video cũng được — chúng tôi sẽ dẫn bạn đi xem dây chuyền.", "ctaButton": "Nói chuyện với chủ xưởng"
+  },
+  "quality": {
+    "badge": "Chất lượng chúng tôi thực sự đứng ra bảo đảm", "title1": "QC trung thực.", "title2": "Giấy tờ thật. Không phô diễn tiếp thị.",
+    "subtitle": "Chúng tôi là một xưởng nhỏ, nên chúng tôi không giả vờ có chuỗi hành trình GRS và thư không phản đối của FDA. Cái chúng tôi có: đầu vào sạch truy được gốc, COA theo từng lô, tùy chọn kiểm lại bởi bên thứ ba SGS, và một chủ xưởng luôn bắt máy.",
+    "promisesTag": "Sáu điều chúng tôi cam kết", "promisesTitle": "Những gì bạn nhận được với mỗi container",
+    "p1Title": "COA theo lô — mỗi lô hàng", "p1Body": "MFI, tỷ trọng, hàm lượng tro được kiểm nội bộ trên mỗi lô sản xuất. File PDF được gửi vào email của bạn trước khi container rời cảng.",
+    "p2Title": "Tùy chọn kiểm nghiệm bên thứ ba SGS", "p2Body": "Với đơn hàng đầu tiên hoặc ứng dụng nhạy cảm, chúng tôi sẽ gửi mẫu đến SGS Ningbo và chuyển tiếp báo cáo cho bạn. Bạn trả phí phòng lab, chúng tôi lo phần hậu cần.",
+    "p3Title": "Đầu vào truy được gốc", "p3Body": "Chúng tôi có thể nêu tên đơn vị OEM đồ gia dụng mà phế liệu của mỗi lô đến từ đó. Không có nguyên liệu bí ẩn. Có ảnh đống nguyên liệu nguồn khi bạn yêu cầu.",
+    "p4Title": "Nhãn ghi rõ mã cấp loại", "p4Body": "Mỗi bao 25 kg và túi FIBC 1 tấn đều ghi mã cấp loại, số lô, ngày sản xuất và khoảng MFI. Không có kiểu \"PP trộn\" mà không nhãn mác.",
+    "p5Title": "Đóng container cẩn thận", "p5Body": "FIBC được buộc chặt vào pallet, có gói hút ẩm cho vận tải biển, sàn container được lót để chuyển hàng sạch sẽ. Nghe thì cơ bản — nhưng nhiều xưởng nhỏ bỏ qua bước này.",
+    "p6Title": "Chính sách làm cho đúng", "p6Body": "Nếu MFI của một lô nằm ngoài dung sai chúng tôi đã nêu, chúng tôi sẽ gửi bù bao hàng ở lô kế tiếp hoặc hoàn tiền theo tỷ lệ. Điều này được ghi rõ trong điều khoản PI của chúng tôi.",
+    "processTag": "Từ phế liệu đến hạt nhựa", "processTitle": "Quy trình xưởng năm bước",
+    "s1Title": "Thu gom tại nguồn", "s1Body": "Chúng tôi thu gom hàng lỗi quy cách & biên nhựa cắt thừa trực tiếp từ các nhà máy đồ gia dụng đã ký hợp đồng ở Ningbo — theo cấp loại, theo màu, không bao giờ trộn lẫn.",
+    "s2Title": "Phân loại & rửa", "s2Body": "Phân loại thủ công + tuyển nổi theo tỷ trọng cho các trường hợp khó. Rửa nguội để loại bụi bề mặt, chỉ rửa nóng khi cần.",
+    "s3Title": "Băm & sấy", "s3Body": "Băm thành vảy ~6 mm, sấy khí nóng xuống dưới độ ẩm 0.3% trước khi đùn.",
+    "s4Title": "Đùn & tạo hạt", "s4Body": "Máy đùn trục vít đơn có thoát khí với lưới lọc 80-mesh, máy tạo hạt cắt sợi làm nguội bằng nước, tùy chọn trục vít đôi cho các cấp loại có độn.",
+    "s5Title": "QC & đóng bao", "s5Body": "Lấy mẫu MFI / tỷ trọng / tro theo từng lô. Bao dệt PP 25 kg hoặc túi FIBC 1 tấn. Dán nhãn cấp loại trước khi lưu kho.",
+    "honestTag": "Công bố trung thực", "honestTitle": "Chúng tôi KHÔNG phải là gì",
+    "honestBody": "Chúng tôi không có chứng chỉ GRS, FDA, RoHS hay REACH SVHC — những đợt đánh giá đó tốn kém hơn mức một xưởng nhỏ như chúng tôi có thể gánh, và chúng tôi thà chuyển phần tiết kiệm đó vào giá cho bạn. Nếu khách hàng cuối của bạn cần những giấy tờ đó, chúng tôi sẽ giới thiệu bạn đến các nhà máy có chứng nhận. Còn nếu họ chỉ cần nhựa tái sinh sạch, đáng tin cậy với giá phải chăng — thì đó chính xác là thứ chúng tôi làm.",
+    "ctaTitle": "Muốn có bảng QC cho cấp loại của bạn?", "ctaBody": "Cho chúng tôi biết loại nhựa và mục đích sử dụng — chúng tôi sẽ gửi COA của 3 lô gần nhất để bạn tự đánh giá độ dao động.", "ctaButton": "Yêu cầu mẫu COA"
+  },
+  "contact": {
+    "title": "Nói chuyện với chủ xưởng", "subtitle": "WhatsApp, email hoặc mẫu bên dưới — cả ba đều đến thẳng chủ xưởng. Trả lời trong vòng 24h, thường nhanh hơn nhiều qua WhatsApp.",
+    "directContact": "Liên hệ trực tiếp", "email": "Email", "whatsappLabel": "WhatsApp / WeChat", "office": "Văn phòng", "address": "Địa chỉ xưởng",
+    "responseTitle": "Thời gian phản hồi", "responseBody": "WhatsApp: thường trả lời trong vòng một giờ trong giờ làm việc ở Ningbo. Email & yêu cầu qua mẫu: trong vòng 24 giờ làm việc.",
+    "hoursTitle": "Giờ làm việc", "hoursBody": "Thứ Hai – Thứ Bảy, 9:00 – 19:00 (GMT+8). Chủ nhật vẫn kiểm WhatsApp.",
+    "formTitle": "Yêu cầu báo giá", "formSubtitle": "Bạn chia sẻ càng chi tiết, chúng tôi báo giá càng nhanh.",
+    "form": {
+      "name": "Tên của bạn", "company": "Công ty", "email": "Email", "phone": "WhatsApp / Điện thoại", "country": "Quốc gia", "port": "Cảng đích",
+      "product": "Sản phẩm quan tâm", "productPlaceholder": "-- Chọn sản phẩm --", "volume": "Khối lượng ước tính", "volumePlaceholder": "-- Chọn khối lượng --",
+      "volumeOpts": { "sample": "Chỉ lấy mẫu (1–3 kg)", "small": "1–5 tấn (LCL)", "medium": "5–20 tấn", "large": "20–100 tấn (1+ container)", "monthly": "100+ tấn / hàng tháng" },
+      "incoterms": "Incoterms", "message": "Cho chúng tôi biết thêm", "messagePh": "MFI mục tiêu, màu sắc, ứng dụng, mọi yêu cầu đặc biệt...",
+      "submit": "Gửi yêu cầu", "submitting": "Đang gửi...", "successTitle": "Cảm ơn bạn!", "successBody": "Yêu cầu của bạn đã được ghi nhận. Chủ xưởng sẽ trả lời trong vòng 24 giờ, thường nhanh hơn qua WhatsApp.",
+      "errorTitle": "Xin lỗi, đã có lỗi xảy ra.", "errorBody": "Vui lòng nhắn WhatsApp cho chúng tôi theo số +86 183 5297 8082 hoặc email richardq0714@gmail.com.", "prefillNotice": "Đã điền sẵn cho cấp loại:"
+    }
+  },
+  "floating": {
+    "title": "Nói chuyện với chủ xưởng", "subtitle": "WhatsApp · Email · Mẫu yêu cầu", "openLabel": "Mở các lựa chọn liên hệ", "close": "Đóng",
+    "waButton": "Nhắn WhatsApp cho chủ xưởng", "waReply": "Trả lời trong ~1h", "waPrefill": "Chào bạn, tôi thấy hạt nhựa tái sinh của bạn trên greenpoly.com và muốn xin báo giá.",
+    "zaloButton": "Chat qua Zalo", "lineButton": "Chat qua LINE", "emailButton": "Gửi email cho chúng tôi", "emailSubject": "Yêu cầu từ website GreenPoly", "formButton": "Mở mẫu yêu cầu", "footnote": "Trả lời trong 24h, nếu không thì cứ nhắc chủ xưởng"
+  },
+  "footer": {
+    "tagline": "Một xưởng gia đình nhỏ ở Ningbo biến phế liệu đồ gia dụng sạch thành hạt nhựa tái sinh ABS, HIPS, PP và GPPS — giao thẳng cho các nhà sản xuất toàn cầu từ năm 2014.",
+    "productsHeading": "Sản phẩm", "companyHeading": "Công ty", "contactHeading": "Liên hệ", "copyright": "© {year} GreenPoly Recycling Co., Ltd. Bảo lưu mọi quyền."
+  }
+}

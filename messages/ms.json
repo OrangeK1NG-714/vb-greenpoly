@@ -1,0 +1,92 @@
+{
+  "meta": { "siteName": "GreenPoly", "siteTagline": "Pelet Kitar Semula ABS · HIPS · PP · GPPS dari Kilang Kecil di Ningbo" },
+  "nav": { "home": "Utama", "products": "Produk", "about": "Tentang", "quality": "Kualiti", "contact": "Hubungi", "getQuote": "Dapatkan Sebut Harga", "menu": "Menu" },
+  "home": {
+    "heroBadge": "Kilang keluarga kecil · Terus dari pemilik · Tiada orang tengah",
+    "heroTitle1": "Pelet Kitar Semula ABS · HIPS", "heroTitle2": "PP · GPPS", "heroTitle3": "dari Kilang Kecil di Ningbo",
+    "heroSubtitle": "Kami mengumpul sisa off-spec bersih dan cebisan tepi daripada pengeksport perkakas rumah kecil ternama di Ningbo, kemudian mencuci dan mempeletkan semula di bengkel kami sendiri. Sumber bahan stabil, harga berpatutan, anda berurusan terus dengan bos. MOQ 1 tan.",
+    "ctaSamples": "Minta Sampel Percuma", "ctaBrowse": "Lihat Produk",
+    "trustQuote": "Bos balas dalam 24 jam", "trustDocs": "COA percuma setiap lot", "trustShipping": "FOB Ningbo / CIF tersedia",
+    "statsYears": "Tahun Dalam Bidang Ini", "statsCapacity": "Output Bulanan", "statsCountries": "Negara Dihantar", "statsMoq": "MOQ Rendah", "statsReply": "Bos Balas Sendiri", "statsLines": "Barisan Resin",
+    "productsTag": "Produk Kami", "productsTitle": "Empat Barisan Resin, Spesifikasi Jujur", "productsSubtitle": "Kami tidak berpura-pura mampu buat segalanya. Hanya ABS, HIPS, PP dan GPPS — tetapi dibuat dengan betul.",
+    "whyTag": "Kenapa Beli daripada Kami", "whyTitle": "Apa yang Kilang Kecil Mampu Buat tapi Kilang Besar Enggan", "whySubtitle": "Kami bukan yang terbesar. Kami yang menjawab WhatsApp anda pada malam Ahad dan menghantar pesanan percubaan 3 tan anda.",
+    "why1Title": "Sumber bersih yang boleh dikesan", "why1Body": "Bahan mentah kami datang daripada pengeksport perkakas rumah ternama di Ningbo — bahagian off-spec, cebisan tepi, sisa runner. Bahan yang sama setiap bulan, bukan campuran sampah rawak.",
+    "why2Title": "Berurusan terus dengan bos", "why2Body": "Tiada pusingan pasukan jualan. WhatsApp terus kepada pemilik, dapat harga sebenar dan lead time sebenar. Kami balas dalam 24 jam, selalunya lebih pantas.",
+    "why3Title": "MOQ 1 tan, fleksibel sebenar", "why3Body": "Kilang besar tak beri sebut harga bawah 20 tan. Kami beri. Campur dua gred dalam satu kontena? Boleh. Laras warna? Boleh. Minta sampel 5 kg dulu? Boleh.",
+    "why4Title": "Harga jujur, tiada caj tersembunyi", "why4Body": "Sebut harga termasuk pembungkusan, pemuatan, dan pengendalian pelabuhan di Ningbo. Tiada caj mengejut sebelum B/L dikeluarkan.",
+    "industriesTag": "Aplikasi", "industriesTitle": "Ke Mana Pelet Kami Berakhir",
+    "industries": { "appliance": "Perkakas Rumah", "electronics": "Elektronik", "automotive": "Alat Ganti Automotif", "disposables": "Perkakas Makan Pakai Buang", "packaging": "Pembungkusan", "stationery": "Alat Tulis & Mainan" },
+    "tbMoq": "MOQ 1 Tan", "tbMoqSub": "Tiada minimum 20 tan", "tbSamples": "Sampel Percuma", "tbSamplesSub": "1–3 kg untuk uji barisan anda", "tbCoa": "COA Setiap Lot", "tbCoaSub": "Didokumen setiap penghantaran", "tbReply": "Balas 24 Jam", "tbReplySub": "Pemilik di WhatsApp",
+    "portsTag": "Logistik", "portsTitle": "Kami Hantar ke Pelabuhan Anda", "portsSubtitle": "Konsolidasi LCL berkala dan muatan satu kontena penuh ke pintu masuk utama Asia Tenggara. Beritahu pelabuhan anda — kami beri sebut harga CIF sampai pelabuhan.", "portsNote": "Kami turut menghantar ke seluruh dunia — cukup beritahu pelabuhan destinasi anda.",
+    "ctaTitle": "Sedia untuk Sebut Harga Sebenar?", "ctaBody": "Beritahu kami jenis resin, MFI, warna, dan jumlah bulanan yang anda perlukan. Bos akan balas di WhatsApp dalam 24 jam dengan harga FOB Ningbo dan stok semasa.", "ctaButton": "Hantar Pertanyaan"
+  },
+  "products": {
+    "title": "Rangkaian Produk Kami", "subtitle": "Empat keluarga resin teras, dua puluh gred. Ketik mana-mana produk untuk lihat spesifikasi, MFI, ketumpatan, dan stok semasa. Setiap gred ada butang \"Tanya Gred Ini\" terus.",
+    "viewAll": "Semua Gred {category}", "from": "Dari", "viewSpecs": "Lihat spesifikasi",
+    "bestSeller": "Paling Laris", "highDemand": "Permintaan Tinggi", "highImpact": "Impak Tinggi", "transparent": "Jernih Kristal", "foodGrade": "Food-Grade Tersedia",
+    "inquireGrade": "Tanya Gred Ini", "gradesHint": "Pilih gred tertentu — borang pertanyaan akan diisi automatik dengan kod, MFI, dan aplikasinya. Kami balas dengan harga FOB Ningbo semasa.",
+    "sourcingTag": "Dari mana asalnya", "sourcingBody": "Bahan mentah dikumpul daripada kilang eksport perkakas rumah kecil ternama di Ningbo: hasil suntikan off-spec, cebisan tepi, sisa sprue dan runner. Sumber yang sama setiap bulan — bukan sampah bercampur rawak.",
+    "spec": { "grade": "Gred", "color": "Warna", "mfi": "MFI (g/10min)", "density": "Ketumpatan", "process": "Proses", "application": "Aplikasi", "price": "Harga (USD/T)", "quickFacts": "Fakta Ringkas", "priceRange": "Harga", "moq": "MOQ", "leadTime": "Lead Time", "payment": "Pembayaran", "packaging": "Pembungkusan", "origin": "Asal" },
+    "requestQuote": "Dapatkan Sebut Harga", "requestSample": "Minta Sampel Percuma", "whatsapp": "WhatsApp", "availableGrades": "Gred Tersedia", "applications": "Aplikasi",
+    "customTitle": "Perlukan Campuran Khas?", "customBody": "Masterbatch warna, pengisi talc / CaCO3, penstabil UV, pengubah suai impak — kami buat lot khas kecil bermula 3 tan.",
+    "readyTitle": "Sedia untuk Memesan?", "readyBody": "Hantar MFI, warna, jumlah, dan pelabuhan destinasi yang anda mahu. Sebut harga dalam 24 jam, terus daripada bos."
+  },
+  "about": {
+    "badge": "Tentang GreenPoly", "title1": "Bengkel Kecil di Ningbo.", "title2": "Bahan Jujur. Terus daripada Pemilik.",
+    "subtitle": "Kami bukan kilang 15,000 tan. Kami bengkel keluarga kecil di Ningbo yang menukar sisa perkakas rumah kecil yang bersih menjadi pelet kitar semula yang boleh dipercayai, satu kontena pada satu masa.",
+    "storyTitle": "Dari Laman Tepi kepada Barisan Pelet",
+    "storyP1": "GreenPoly bermula sebagai laman tepi di sebelah kilang pemasangan perkakas kecil di Ningbo. Kami mengumpul hasil suntikan off-spec, sisa runner, dan cebisan tepi mereka, memprosesnya semula melalui extruder asas, dan menjual peletnya kepada kilang mainan dan alat tulis tempatan.",
+    "storyP2": "Sepuluh tahun kemudian kami masih kecil — satu barisan pelet untuk ABS / HIPS, satu untuk PP, satu barisan dikongsi untuk GPPS. Kira-kira 300 tan sebulan secara keseluruhan. Tetapi sumber bahannya kekal sama: sisa yang bersih, diasingkan, dan boleh dikesan daripada kilang eksport perkakas rumah ternama sekitar Beilun dan Cixi.",
+    "storyP3": "Yang berubah ialah pihak pembeli. Kini kami menghantar kontena kepada compounder, pencetak suntikan, dan peniaga di Vietnam, Indonesia, India, Pakistan, Türkiye, Mesir, dan EU. Bengkel yang sama, bos yang sama di WhatsApp, bahan yang sama — cuma dibungkus untuk dunia.",
+    "sourcingTag": "Beza Kami", "sourcingTitle": "Dari Mana Sebenarnya Pelet Kami Datang",
+    "sourcingP1": "Kebanyakan \"pelet kitar semula\" di Alibaba dicampur daripada sisa warna-campur, gred-campur secara rawak — itulah sebabnya MFI berayun 30% antara lot. Kami tidak bekerja begitu.",
+    "sourcingP2": "Bahan mentah kami dikontrak daripada empat kilang eksport perkakas rumah kecil ternama di Ningbo. Mereka membuat produk untuk peruncit Eropah dan Amerika Utara — cerek, kipas, pembersih vakum, pengering rambut. Bahagian off-spec dan cebisan tepi yang mereka hasilkan bersih, satu gred, satu warna, dan boleh dikesan kepada OEM.",
+    "sourcingPoint1": "Satu sumber setiap lot — anda tidak dapat campuran rawak.", "sourcingPoint2": "Sisa OEM off-spec = gred resin asalnya memang berkualiti baik dari mula.", "sourcingPoint3": "Warna diasingkan di sumber — kami tidak mewarna untuk menutup pencemaran.", "sourcingPoint4": "MFI biasanya berayun kurang daripada 12% antara lot pada kod gred yang sama.",
+    "stat1Label": "Output Bulanan", "stat1Body": "Kira-kira 300 tan pelet merentas keempat-empat barisan resin.", "stat2Label": "Barisan Resin", "stat2Body": "ABS, HIPS, PP, GPPS — fokus dan konsisten.", "stat3Label": "Masa Balas Bos", "stat3Body": "WhatsApp / e-mel dibalas dalam 24 jam, biasanya jauh lebih pantas.",
+    "ctaTitle": "Datang Lihat Bengkelnya", "ctaBody": "Melawat Ningbo? Kami jemput anda di lapangan terbang. Jika tidak, panggilan video pun boleh — kami tunjukkan barisannya kepada anda.", "ctaButton": "Berbual dengan Bos"
+  },
+  "quality": {
+    "badge": "Kualiti yang Benar-benar Kami Pertanggungjawab", "title1": "QC Jujur.", "title2": "Dokumen Sebenar. Tiada Lakonan Pemasaran.",
+    "subtitle": "Kami kilang kecil, jadi kami tidak berpura-pura ada chain-of-custody GRS dan surat tiada bantahan FDA. Apa yang kami ada: bahan bersih boleh dikesan, COA peringkat lot, ujian semula pihak ketiga SGS (pilihan), dan bos yang mengangkat telefon sendiri.",
+    "promisesTag": "Enam Perkara yang Kami Janji", "promisesTitle": "Apa yang Anda Dapat Setiap Kontena",
+    "p1Title": "COA setiap lot — setiap penghantaran", "p1Body": "MFI, ketumpatan, kandungan abu diuji sendiri pada setiap lot pengeluaran. PDF dihantar ke e-mel anda sebelum kontena meninggalkan pelabuhan.",
+    "p2Title": "Ujian pihak ketiga SGS (pilihan)", "p2Body": "Untuk pesanan pertama atau aplikasi sensitif, kami hantar sampel ke SGS Ningbo dan majukan laporannya. Anda bayar yuran makmal, kami uruskan logistik.",
+    "p3Title": "Bahan boleh dikesan", "p3Body": "Kami boleh namakan OEM perkakas rumah asal sisa setiap lot. Tiada bahan misteri. Foto timbunan sumber tersedia atas permintaan.",
+    "p4Title": "Pelabelan berkod gred", "p4Body": "Setiap beg 25 kg dan FIBC 1 tan membawa kod gred, nombor lot, tarikh pengeluaran, dan julat MFI. Tiada \"PP campur\" tanpa label.",
+    "p5Title": "Ketelitian pemuatan kontena", "p5Body": "FIBC diikat pada palet, desikan dimasukkan untuk pengangkutan laut, lantai kontena dilapik untuk pemindahan bersih. Kedengaran asas — tetapi ramai kilang kecil melangkaunya.",
+    "p6Title": "Dasar betulkan kesilapan", "p6Body": "Jika MFI sesuatu lot di luar toleransi yang kami nyatakan, kami hantar beg gantian pada penghantaran seterusnya atau bayar balik mengikut kadar. Didokumenkan dalam terma PI kami.",
+    "processTag": "Dari Sisa kepada Pelet", "processTitle": "Aliran Bengkel Lima Langkah",
+    "s1Title": "Ambil dari sumber", "s1Body": "Kami kumpul off-spec & cebisan tepi terus daripada kilang perkakas rumah Ningbo yang berkontrak — ikut gred, ikut warna, tak pernah dicampur.",
+    "s2Title": "Asing & cuci", "s2Body": "Asingan manual + apungan ketumpatan untuk kes sukar. Cuci sejuk untuk habuk permukaan, cuci panas hanya bila perlu.",
+    "s3Title": "Cincang & keringkan", "s3Body": "Digranul kepada serpihan ~6 mm, dikeringkan dengan udara panas ke bawah kelembapan 0.3% sebelum diekstrud.",
+    "s4Title": "Ekstrud & peletkan", "s4Body": "Extruder skru tunggal berventilasi dengan penapis 80-mesh, pemotong pelet strand disejukkan air, pilihan skru kembar untuk gred berpengisi.",
+    "s5Title": "QC & beg", "s5Body": "MFI / ketumpatan / abu disampel setiap lot. Beg tenunan PP 25 kg atau FIBC 1 tan. Label gred dimeterai sebelum disimpan.",
+    "honestTag": "Pendedahan Jujur", "honestTitle": "Apa yang BUKAN Kami",
+    "honestBody": "Kami tidak memegang sijil GRS, FDA, RoHS atau REACH SVHC — audit itu berkos lebih daripada yang mampu ditanggung kilang kecil seperti kami, dan kami lebih suka memindahkan penjimatan itu kepada anda melalui harga. Jika pelanggan akhir anda perlukan dokumen tersebut, kami akan tunjukkan anda kepada kilang bersijil. Jika mereka cuma perlukan resin kitar semula yang bersih dan boleh dipercayai pada harga berpatutan — itulah tepat yang kami buat.",
+    "ctaTitle": "Mahukan Helaian QC untuk Gred Anda?", "ctaBody": "Beritahu kami jenis resin dan tujuan penggunaan — kami hantar COA 3 lot terakhir supaya anda boleh nilai sendiri kekonsistenannya.", "ctaButton": "Minta Sampel COA"
+  },
+  "contact": {
+    "title": "Berbual dengan Bos", "subtitle": "WhatsApp, e-mel atau borang di bawah — ketiga-tiganya sampai kepada pemilik. Balas dalam 24 jam, biasanya jauh lebih pantas melalui WhatsApp.",
+    "directContact": "Hubungan Terus", "email": "E-mel", "whatsappLabel": "WhatsApp / WeChat", "office": "Pejabat", "address": "Alamat Bengkel",
+    "responseTitle": "Masa Tindak Balas", "responseBody": "WhatsApp: biasanya dibalas dalam sejam pada waktu bekerja Ningbo. E-mel & borang: dalam 24 jam bekerja.",
+    "hoursTitle": "Waktu Operasi", "hoursBody": "Isnin – Sabtu, 9:00 pagi – 7:00 petang (GMT+8). WhatsApp turut disemak pada hari Ahad.",
+    "formTitle": "Dapatkan Sebut Harga", "formSubtitle": "Lebih banyak butiran anda kongsi, lebih cepat kami beri sebut harga.",
+    "form": {
+      "name": "Nama Anda", "company": "Syarikat", "email": "E-mel", "phone": "WhatsApp / Telefon", "country": "Negara", "port": "Pelabuhan Destinasi",
+      "product": "Produk Diminati", "productPlaceholder": "-- Pilih produk --", "volume": "Anggaran Jumlah", "volumePlaceholder": "-- Pilih jumlah --",
+      "volumeOpts": { "sample": "Sampel sahaja (1–3 kg)", "small": "1–5 tan (LCL)", "medium": "5–20 tan", "large": "20–100 tan (1+ kontena)", "monthly": "100+ tan / bulan" },
+      "incoterms": "Incoterms", "message": "Beritahu Lebih Lanjut", "messagePh": "Sasaran MFI, warna, aplikasi, sebarang keperluan khas...",
+      "submit": "Hantar Pertanyaan", "submitting": "Menghantar...", "successTitle": "Terima kasih!", "successBody": "Pertanyaan anda telah masuk. Bos akan balas dalam 24 jam, biasanya lebih pantas melalui WhatsApp.",
+      "errorTitle": "Maaf, ada masalah berlaku.", "errorBody": "Sila WhatsApp kami di +86 183 5297 8082 atau e-mel ke richardq0714@gmail.com.", "prefillNotice": "Diisi awal untuk gred:"
+    }
+  },
+  "floating": {
+    "title": "Berbual dengan Bos", "subtitle": "WhatsApp · E-mel · Borang Pertanyaan", "openLabel": "Buka pilihan hubungan", "close": "Tutup",
+    "waButton": "WhatsApp Bos", "waReply": "~1 jam balas", "waPrefill": "Hai, saya nampak pelet kitar semula anda di greenpoly.com dan ingin dapatkan sebut harga.",
+    "zaloButton": "Sembang di Zalo", "lineButton": "Sembang di LINE", "emailButton": "E-mel Kami", "emailSubject": "Pertanyaan dari laman web GreenPoly", "formButton": "Buka Borang Pertanyaan", "footnote": "Balas dalam 24 jam atau ia jadi tanggungan bos"
+  },
+  "footer": {
+    "tagline": "Bengkel keluarga kecil di Ningbo yang menukar sisa perkakas rumah bersih menjadi pelet kitar semula ABS, HIPS, PP dan GPPS — terus kepada pengeluar global sejak 2014.",
+    "productsHeading": "Produk", "companyHeading": "Syarikat", "contactHeading": "Hubungi", "copyright": "© {year} GreenPoly Recycling Co., Ltd. Hak cipta terpelihara."
+  }
+}
