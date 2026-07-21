@@ -24,7 +24,7 @@ jobs:
         npx prisma generate
         npm run build
       env:
-        NEXT_PUBLIC_SITE_URL: https://richardq.tech
+        NEXT_PUBLIC_SITE_URL: https://green.richardq.tech
         DATABASE_URL: file:./build.db
 
     - name: Deploy to server
@@ -42,8 +42,8 @@ jobs:
           # 拉取最新代码
           git pull origin main 2>/dev/null || git clone https://github.com/OrangeK1NG-714/vb-greenpoly.git .
 
-          # 完整安装依赖(Next 构建需要 devDependencies)
-          npm install
+          # 完整安装依赖(Next 构建需要 devDependencies;服务器在国内,用镜像源)
+          npm install --registry=https://registry.npmmirror.com
 
           # 先生成 Prisma 客户端,再构建(顺序不能反)
           export DATABASE_URL="file:/var/www/greenpoly/prod.db"
@@ -53,12 +53,12 @@ jobs:
           # 数据库迁移
           npx prisma migrate deploy || echo "No migrations to apply"
 
-          # 用 PM2 启动或重启服务
+          # 用 PM2 启动或重启服务(固定 3002 端口,避开宝塔占用的 3000)
           pm2 describe greenpoly > /dev/null 2>&1
           if [ $? -eq 0 ]; then
-            pm2 restart greenpoly
+            PORT=3002 pm2 restart greenpoly --update-env
           else
-            pm2 start npm --name greenpoly -- start
+            PORT=3002 pm2 start npm --name greenpoly -- start
           fi
 
           pm2 save
