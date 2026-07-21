@@ -3,25 +3,38 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { getVisitorInfo } from "@/lib/geo";
 import { lookupIp } from "@/lib/ip-geo";
+import { apiLimiters, rejectCrossSite, rejectRateLimited, requestBodyErrorResponse } from "@/lib/api-security";
+import { readJsonBody } from "@/lib/request-security";
 
 export const runtime = "nodejs";
 
+const TrackPropertySchema = z.union([z.string().max(1024), z.number().finite(), z.boolean(), z.null()]);
 const TrackSchema = z.object({
-  eventName: z.string().min(1).max(64),
-  page: z.string().min(1).max(512),
-  sessionId: z.string().min(1).max(64),
-  properties: z.record(z.unknown()).optional(),
+  eventName: z.enum([
+    "page_view", "dwell", "page_exit", "scroll_depth", "cta_click",
+    "whatsapp_click", "email_click", "outbound_click", "form_submit",
+    "form_field_focus", "inquiry_intent", "product_card_impression",
+  ]),
+  page: z.string().min(1).max(512).startsWith("/"),
+  sessionId: z.string().regex(/^[A-Za-z0-9_-]{8,64}$/),
+  properties: z.record(TrackPropertySchema).refine(
+    (properties) => Object.keys(properties).length <= 16 && Object.keys(properties).every((key) => key.length <= 64)
+  ).optional(),
   referrer: z.string().max(1024).optional(),
   utmSource: z.string().max(128).optional(),
   utmMedium: z.string().max(128).optional(),
   utmCampaign: z.string().max(128).optional(),
-  locale: z.string().max(8).optional(),
-});
+  locale: z.enum(["en", "vi", "id", "th", "ms", "zh"]).optional(),
+}).strict();
 
 export async function POST(req: NextRequest) {
+  const crossSite = rejectCrossSite(req);
+  if (crossSite) return crossSite;
+  const limited = rejectRateLimited(req, apiLimiters.track);
+  if (limited) return limited;
+
   try {
-    const raw = await req.text();
-    const body = JSON.parse(raw);
+    const body = await readJsonBody(req, 8 * 1024);
     const parsed = TrackSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json({ ok: false, error: "invalid_payload" }, { status: 400 });
@@ -105,6 +118,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ ok: true });
   } catch (err) {
+    const inputError = requestBodyErrorResponse(err);
+    if (inputError) return inputError;
     console.error("track error", err);
     return NextResponse.json({ ok: false, error: "server_error" }, { status: 500 });
   }

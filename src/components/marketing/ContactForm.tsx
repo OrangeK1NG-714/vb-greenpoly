@@ -120,6 +120,10 @@ export default function ContactForm() {
 
   return (
     <form className="space-y-4" onSubmit={onSubmit} onFocus={onFieldFocus} ref={formRef}>
+      <label className="absolute -left-[9999px] h-px w-px overflow-hidden" aria-hidden="true">
+        Website
+        <input name="website" tabIndex={-1} autoComplete="off" />
+      </label>
       {initialGradeCode && (
         <div className="bg-emerald-50 border border-emerald-200 rounded-lg px-4 py-3 text-sm text-emerald-800">
           <strong>{t("prefillNotice")}</strong> {initialGradeCode}
