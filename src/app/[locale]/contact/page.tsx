@@ -3,11 +3,16 @@ import { setRequestLocale } from "next-intl/server";
 import { getTranslations } from "next-intl/server";
 import ContactForm from "@/components/marketing/ContactForm";
 import { CONTACT, waLink, zaloLink, lineLink } from "@/lib/site";
+import { localizedAlternates } from "@/lib/seo";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "contact" });
-  return { title: t("title"), description: t("subtitle") };
+  return {
+    title: t("title"),
+    description: t("subtitle"),
+    alternates: localizedAlternates(locale, "/contact"),
+  };
 }
 
 export default async function ContactPage({ params }: { params: Promise<{ locale: string }> }) {

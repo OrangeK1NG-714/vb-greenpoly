@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { getVisitorInfo } from "@/lib/geo";
-import { lookupIp } from "@/lib/ip-geo";
 import { apiLimiters, rejectCrossSite, rejectRateLimited, requestBodyErrorResponse } from "@/lib/api-security";
 import { readJsonBody } from "@/lib/request-security";
 
@@ -41,13 +40,7 @@ export async function POST(req: NextRequest) {
     }
 
     const data = parsed.data;
-    const visitor = await getVisitorInfo();
-
-    // Resolve IP -> location. Falls back to header values if available;
-    // hits ip-api.com when the IP is public and headers don't tell us.
-    const geo = await lookupIp(visitor.ip);
-    const country = geo.country ?? visitor.country ?? null;
-    const city = geo.city ?? visitor.city ?? null;
+    const visitor = getVisitorInfo(req.headers);
 
     await prisma.event.create({
       data: {
@@ -60,8 +53,8 @@ export async function POST(req: NextRequest) {
         utmMedium: data.utmMedium ?? null,
         utmCampaign: data.utmCampaign ?? null,
         locale: data.locale ?? null,
-        country,
-        city,
+        country: visitor.country,
+        city: visitor.city,
         userAgent: visitor.userAgent,
         ipAddress: visitor.ip,
       },
@@ -74,14 +67,13 @@ export async function POST(req: NextRequest) {
         data: {
           id: data.sessionId,
           ipAddress: visitor.ip,
-          country,
-          countryCode: geo.countryCode,
-          region: geo.region,
-          city,
-          latitude: geo.latitude,
-          longitude: geo.longitude,
-          isp: geo.isp,
-          timezone: geo.timezone,
+          country: visitor.country,
+          countryCode: visitor.countryCode,
+          region: visitor.region,
+          city: visitor.city,
+          latitude: visitor.latitude,
+          longitude: visitor.longitude,
+          timezone: visitor.timezone,
           userAgent: visitor.userAgent,
           referrer: data.referrer ?? visitor.referrer ?? null,
           utmSource: data.utmSource ?? null,
@@ -104,14 +96,13 @@ export async function POST(req: NextRequest) {
       }
       // Backfill location/IP on existing sessions if we now know more
       if (!existing.ipAddress && visitor.ip) updateData.ipAddress = visitor.ip;
-      if (!existing.country && country) updateData.country = country;
-      if (!existing.countryCode && geo.countryCode) updateData.countryCode = geo.countryCode;
-      if (!existing.region && geo.region) updateData.region = geo.region;
-      if (!existing.city && city) updateData.city = city;
-      if (existing.latitude == null && geo.latitude != null) updateData.latitude = geo.latitude;
-      if (existing.longitude == null && geo.longitude != null) updateData.longitude = geo.longitude;
-      if (!existing.isp && geo.isp) updateData.isp = geo.isp;
-      if (!existing.timezone && geo.timezone) updateData.timezone = geo.timezone;
+      if (!existing.country && visitor.country) updateData.country = visitor.country;
+      if (!existing.countryCode && visitor.countryCode) updateData.countryCode = visitor.countryCode;
+      if (!existing.region && visitor.region) updateData.region = visitor.region;
+      if (!existing.city && visitor.city) updateData.city = visitor.city;
+      if (existing.latitude == null && visitor.latitude != null) updateData.latitude = visitor.latitude;
+      if (existing.longitude == null && visitor.longitude != null) updateData.longitude = visitor.longitude;
+      if (!existing.timezone && visitor.timezone) updateData.timezone = visitor.timezone;
 
       await prisma.session.update({ where: { id: data.sessionId }, data: updateData });
     }

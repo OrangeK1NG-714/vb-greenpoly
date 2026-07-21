@@ -45,9 +45,7 @@ const nextConfig = {
   },
   // libsql uses dynamic requires that confuse webpack's static analysis;
   // keep these server-side only and out of the bundle.
-  experimental: {
-    serverComponentsExternalPackages: ["@libsql/client", "@prisma/adapter-libsql", "libsql"],
-  },
+  serverExternalPackages: ["@libsql/client", "@prisma/adapter-libsql", "libsql"],
 };
 
 export default withNextIntl(nextConfig);

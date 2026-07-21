@@ -1,48 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
+import type { Metadata } from "next";
 import { useTranslations, useLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import ProductCardImpression from "@/components/marketing/ProductCardImpression";
 import { SEA_PORTS, waLink } from "@/lib/site";
-
-const PRODUCTS = [
-  {
-    slug: "abs",
-    badge: "bestSeller",
-    badgeClass: "bg-emerald-50 text-emerald-700",
-    title: "Recycled ABS Pellets",
-    blurb: "From appliance and electronic housings. Black / natural / custom color, V-0 flame-retardant available. MFI 8–22.",
-    priceFrom: "$950/T",
-    img: "/images/products/abs.jpg",
-  },
-  {
-    slug: "hips",
-    badge: "highImpact",
-    badgeClass: "bg-orange-50 text-orange-700",
-    title: "Recycled HIPS Pellets",
-    blurb: "Refrigerator-liner & yogurt-cup HIPS. Excellent toughness, low odor. Sheet, thermoforming and injection grades.",
-    priceFrom: "$820/T",
-    img: "/images/products/hips.jpg",
-  },
-  {
-    slug: "pp",
-    badge: "highDemand",
-    badgeClass: "bg-blue-50 text-blue-700",
-    title: "Recycled PP Pellets",
-    blurb: "Injection & raffia rPP from clean industrial scrap. Homo / copolymer / talc-filled. MFI 2–25.",
-    priceFrom: "$780/T",
-    img: "/images/products/pp.jpg",
-  },
-  {
-    slug: "gpps",
-    badge: "transparent",
-    badgeClass: "bg-sky-50 text-sky-700",
-    title: "Recycled GPPS Pellets",
-    blurb: "Crystal-clear general-purpose polystyrene for cutlery, CD cases, stationery, light covers. Injection & sheet.",
-    priceFrom: "$880/T",
-    img: "/images/products/gpps.jpg",
-  },
-];
+import { PRODUCTS, pick } from "@/lib/products-data";
+import { localizedAlternates } from "@/lib/seo";
+import type { Locale } from "@/i18n/config";
 
 const TRUST = [
   { icon: "📦", key: "tbMoq", sub: "tbMoqSub" },
@@ -51,12 +16,22 @@ const TRUST = [
   { icon: "⚡", key: "tbReply", sub: "tbReplySub" },
 ];
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return { alternates: localizedAlternates(locale) };
+}
+
 export default function Home({ params }: { params: { locale: string } }) {
   setRequestLocale(params.locale);
   const t = useTranslations("home");
   const tp = useTranslations("products");
   const locale = useLocale();
   const localePath = locale === "en" ? "" : `/${locale}`;
+  const lang = locale as Locale;
 
   return (
     <>
@@ -147,16 +122,16 @@ export default function Home({ params }: { params: { locale: string } }) {
                   data-track={`product_card_${p.slug}`}
                 >
                   <div className="relative">
-                    <Image src={p.img} alt={p.title} width={600} height={400} className="w-full h-48 object-cover" />
+                    <Image src={p.hero} alt={pick(p.name, lang)} width={600} height={400} className="w-full h-48 object-cover" />
                     <span className={`absolute top-3 left-3 text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm ${p.badgeClass}`}>
                       {tp(p.badge)}
                     </span>
                   </div>
                   <div className="p-5">
-                    <h3 className="text-lg font-bold mt-1 mb-2 text-forest-900">{p.title}</h3>
-                    <p className="text-slate-600 text-sm mb-4 line-clamp-3">{p.blurb}</p>
+                    <h3 className="text-lg font-bold mt-1 mb-2 text-forest-900">{pick(p.name, lang)}</h3>
+                    <p className="text-slate-600 text-sm mb-4 line-clamp-3">{pick(p.shortDesc, lang)}</p>
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-slate-500">{tp("from")} <span className="font-bold text-brand-700">{p.priceFrom}</span></span>
+                      <span className="text-slate-500">{tp("from")} <span className="font-bold text-brand-700">${p.priceFrom}/T</span></span>
                       <span className="text-brand-700 font-semibold">{tp("viewSpecs")} →</span>
                     </div>
                   </div>

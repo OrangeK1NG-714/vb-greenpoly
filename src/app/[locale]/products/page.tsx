@@ -4,11 +4,16 @@ import { setRequestLocale } from "next-intl/server";
 import { getTranslations } from "next-intl/server";
 import { PRODUCTS, pick } from "@/lib/products-data";
 import type { Locale } from "@/i18n/config";
+import { localizedAlternates } from "@/lib/seo";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "products" });
-  return { title: t("title"), description: t("subtitle") };
+  return {
+    title: t("title"),
+    description: t("subtitle"),
+    alternates: localizedAlternates(locale, "/products"),
+  };
 }
 
 export default async function ProductsPage({ params }: { params: Promise<{ locale: string }> }) {

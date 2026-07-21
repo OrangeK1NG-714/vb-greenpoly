@@ -1,11 +1,16 @@
 import Link from "next/link";
 import { setRequestLocale } from "next-intl/server";
 import { getTranslations } from "next-intl/server";
+import { localizedAlternates } from "@/lib/seo";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "about" });
-  return { title: `${t("title1")} ${t("title2")}`, description: t("subtitle") };
+  return {
+    title: `${t("title1")} ${t("title2")}`,
+    description: t("subtitle"),
+    alternates: localizedAlternates(locale, "/about"),
+  };
 }
 
 export default async function AboutPage({ params }: { params: Promise<{ locale: string }> }) {

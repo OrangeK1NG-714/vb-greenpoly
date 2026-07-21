@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
 
     const { grade, message, website, ...rest } = parsed.data;
     if (website) return NextResponse.json({ ok: true });
-    const visitor = await getVisitorInfo();
+    const visitor = getVisitorInfo(req.headers);
 
     // Stash grade code in message tail so we don't need a schema change.
     const finalMessage = grade

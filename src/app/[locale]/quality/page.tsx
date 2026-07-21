@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { setRequestLocale } from "next-intl/server";
 import { getTranslations } from "next-intl/server";
+import { localizedAlternates } from "@/lib/seo";
 
 const PROMISES = [
   { icon: "🔬", titleKey: "p1Title", bodyKey: "p1Body" },
@@ -14,7 +15,11 @@ const PROMISES = [
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "quality" });
-  return { title: `${t("title1")} ${t("title2")}`, description: t("subtitle") };
+  return {
+    title: `${t("title1")} ${t("title2")}`,
+    description: t("subtitle"),
+    alternates: localizedAlternates(locale, "/quality"),
+  };
 }
 
 const STEPS = [

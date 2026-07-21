@@ -9,7 +9,9 @@ const SCROLL_DEPTHS = [25, 50, 75, 100];
 
 export default function Tracker({ locale }: { locale: string }) {
   const pathname = usePathname();
-  const dwellStartRef = useRef<number>(Date.now());
+  // Initialized to 0 to keep render pure; the page-view effect below sets the
+  // real dwell start on mount and on every path change before it is read.
+  const dwellStartRef = useRef<number>(0);
   const seenDepthsRef = useRef<Set<number>>(new Set());
 
   // Page view + reset dwell on path change

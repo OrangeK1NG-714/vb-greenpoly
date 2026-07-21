@@ -69,7 +69,7 @@ export default async function VisitorsPage({
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Visitors</h1>
-          <p className="text-xs text-slate-500 mt-1">All sessions with IP, geolocation & recent activity</p>
+          <p className="text-xs text-slate-500 mt-1">IP, edge-provided location and recent activity. Location is approximate.</p>
         </div>
         <span className="text-sm text-slate-500">{total} total · page {pageNum}/{totalPages}</span>
       </div>
