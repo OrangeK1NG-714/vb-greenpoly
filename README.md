@@ -37,6 +37,22 @@ npm run dev    # http://localhost:3000
 **管理后台**：访问 `http://localhost:3000/admin/login`
 本地开发可使用 `.env.example` 中的种子账号；它只能用于本机。生产环境会拒绝默认密码、短于 12 个字符的管理员密码，以及弱于 32 个字符的 `AUTH_SECRET`。
 
+## 🔀 BFF 模式：询盘交给 go-backend（可选）
+
+默认询盘存本地 Prisma。配置三个环境变量后，询盘改由 Go 统一后端接管，
+本项目的 API Routes 退化为纯 BFF（校验 / 蜜罐 / 限流 / 会话标记留在本地）：
+
+```bash
+GO_BACKEND_URL="http://localhost:8787"        # go-backend 地址
+GO_BACKEND_PROJECT_KEY="..."                  # POST /api/admin/projects/greenpoly/key 生成
+GO_BACKEND_ADMIN_TOKEN="..."                  # = go-backend 的 METRICS_ADMIN_TOKEN
+```
+
+三个都设置才启用；缺任何一个自动回退 Prisma，本地开发互不影响。
+切换后 `/admin` 的询盘列表、详情、状态修改、Dashboard 询盘统计全部读写 go-backend；
+埋点（track / sessions / events）仍走本地 Prisma，不受影响。
+
+
 ## 📁 项目结构
 
 ```

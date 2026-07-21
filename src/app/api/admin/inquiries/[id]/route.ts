@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { getCurrentAdmin } from "@/lib/auth";
 import { apiLimiters, rejectCrossSite, rejectRateLimited, requestBodyErrorResponse } from "@/lib/api-security";
 import { readJsonBody } from "@/lib/request-security";
+import { goBackendEnabled, updateInquiryGo } from "@/lib/go-backend";
 
 export const runtime = "nodejs";
 
@@ -30,6 +31,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const parsed = PatchSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json({ ok: false, error: "invalid_payload" }, { status: 400 });
+    }
+    if (goBackendEnabled) {
+      const inquiry = await updateInquiryGo(id, parsed.data);
+      return NextResponse.json({ ok: true, inquiry });
     }
     const inquiry = await prisma.inquiry.update({
       where: { id },

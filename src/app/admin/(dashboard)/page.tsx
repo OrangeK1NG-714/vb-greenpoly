@@ -1,8 +1,39 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
+import { goBackendEnabled, inquiryStatsGo } from "@/lib/go-backend";
 import { subDays, startOfDay } from "date-fns";
 
 export const dynamic = "force-dynamic";
+
+type StatusBreakdown = { status: string; _count: { status: number } }[];
+
+async function getInquiryStats(): Promise<{
+  totalInquiries: number;
+  newInquiries: number;
+  last7Inquiries: number;
+  statusBreakdown: StatusBreakdown;
+}> {
+  if (goBackendEnabled) {
+    const stats = await inquiryStatsGo();
+    return {
+      totalInquiries: stats.total,
+      newInquiries: stats.new,
+      last7Inquiries: stats.last7d,
+      statusBreakdown: Object.entries(stats.byStatus ?? {}).map(([status, count]) => ({
+        status,
+        _count: { status: count },
+      })),
+    };
+  }
+  const last7Start = startOfDay(subDays(new Date(), 7));
+  const [totalInquiries, newInquiries, last7Inquiries, statusBreakdown] = await Promise.all([
+    prisma.inquiry.count(),
+    prisma.inquiry.count({ where: { status: "NEW" } }),
+    prisma.inquiry.count({ where: { createdAt: { gte: last7Start } } }),
+    prisma.inquiry.groupBy({ by: ["status"], _count: { status: true } }),
+  ]);
+  return { totalInquiries, newInquiries, last7Inquiries, statusBreakdown };
+}
 
 async function getStats() {
   const now = new Date();
@@ -11,19 +42,14 @@ async function getStats() {
   const last30Start = startOfDay(subDays(now, 30));
 
   const [
-    totalInquiries,
-    newInquiries,
-    last7Inquiries,
+    inquiryStats,
     last7Sessions,
     last7PageViews,
     last7Conversions,
     topPages,
     topCountries,
-    statusBreakdown,
   ] = await Promise.all([
-    prisma.inquiry.count(),
-    prisma.inquiry.count({ where: { status: "NEW" } }),
-    prisma.inquiry.count({ where: { createdAt: { gte: last7Start } } }),
+    getInquiryStats(),
     prisma.session.count({ where: { firstSeen: { gte: last7Start } } }),
     prisma.event.count({ where: { eventName: "page_view", createdAt: { gte: last7Start } } }),
     prisma.session.count({ where: { firstSeen: { gte: last7Start }, inquired: true } }),
@@ -41,12 +67,9 @@ async function getStats() {
       orderBy: { _count: { country: "desc" } },
       take: 5,
     }),
-    prisma.inquiry.groupBy({
-      by: ["status"],
-      _count: { status: true },
-    }),
   ]);
 
+  const { totalInquiries, newInquiries, last7Inquiries, statusBreakdown } = inquiryStats;
   const conversionRate = last7Sessions > 0 ? ((last7Conversions / last7Sessions) * 100).toFixed(1) : "0";
 
   return {

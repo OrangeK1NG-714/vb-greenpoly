@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { getVisitorInfo } from "@/lib/geo";
 import { apiLimiters, rejectCrossSite, rejectRateLimited, requestBodyErrorResponse } from "@/lib/api-security";
 import { readJsonBody } from "@/lib/request-security";
+import { createInquiryGo, goBackendEnabled } from "@/lib/go-backend";
 
 export const runtime = "nodejs";
 
@@ -48,17 +49,43 @@ export async function POST(req: NextRequest) {
       ? `${message ?? ""}\n\n[Grade requested] ${grade}`.trim()
       : message;
 
-    const inquiry = await prisma.inquiry.create({
-      data: {
-        ...rest,
-        message: finalMessage,
-        ipAddress: visitor.ip,
-        userAgent: visitor.userAgent,
-        referrer: visitor.referrer,
-      },
-    });
+    let inquiryId: string;
+    if (goBackendEnabled) {
+      // BFF mode: the Go backend owns lead storage; we keep validation,
+      // honeypot, rate limiting, and session attribution here at the edge.
+      inquiryId = await createInquiryGo({
+        name: rest.name,
+        email: rest.email,
+        company: rest.company ?? "",
+        phone: rest.phone ?? "",
+        country: rest.country ?? "",
+        port: rest.port ?? "",
+        product: rest.product ?? "",
+        volume: rest.volume ?? "",
+        incoterms: rest.incoterms ?? "",
+        message: finalMessage ?? "",
+        sessionId: rest.sessionId ?? "",
+        ipAddress: visitor.ip ?? "",
+        userAgent: visitor.userAgent ?? "",
+        referrer: visitor.referrer ?? "",
+        utmSource: rest.utmSource ?? "",
+        utmMedium: rest.utmMedium ?? "",
+        utmCampaign: rest.utmCampaign ?? "",
+      });
+    } else {
+      const inquiry = await prisma.inquiry.create({
+        data: {
+          ...rest,
+          message: finalMessage,
+          ipAddress: visitor.ip,
+          userAgent: visitor.userAgent,
+          referrer: visitor.referrer,
+        },
+      });
+      inquiryId = inquiry.id;
+    }
 
-    // Mark session as inquired
+    // Mark session as inquired (sessions stay in the local analytics DB)
     if (rest.sessionId) {
       await prisma.session.updateMany({
         where: { id: rest.sessionId },
@@ -68,7 +95,7 @@ export async function POST(req: NextRequest) {
 
     // TODO: send email notification via Resend / SES / etc.
 
-    return NextResponse.json({ ok: true, id: inquiry.id });
+    return NextResponse.json({ ok: true, id: inquiryId });
   } catch (err) {
     const inputError = requestBodyErrorResponse(err);
     if (inputError) return inputError;
