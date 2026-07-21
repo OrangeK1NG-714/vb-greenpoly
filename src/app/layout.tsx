@@ -1,23 +1,14 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Noto_Sans_Thai } from "next/font/google";
+import localFont from "next/font/local";
 import { CONTACT } from "@/lib/site";
 import "./globals.css";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://greenpoly.com";
 
-// Plus Jakarta Sans — designed in Jakarta, excellent Latin + Vietnamese diacritics.
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ["latin", "latin-ext", "vietnamese"],
+// Keep builds self-contained; Thai glyphs use the system fallback declared in globals.css.
+const siteSans = localFont({
+  src: "./fonts/GeistVF.woff",
   variable: "--font-sans",
-  weight: ["400", "500", "600", "700", "800"],
-  display: "swap",
-});
-
-// Noto Sans Thai — so Thai copy renders correctly instead of falling back to a system font.
-const notoThai = Noto_Sans_Thai({
-  subsets: ["thai"],
-  variable: "--font-thai",
-  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -73,7 +64,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html className={`${jakarta.variable} ${notoThai.variable}`}>
+    <html className={siteSans.variable}>
       <body className="antialiased">{children}</body>
     </html>
   );

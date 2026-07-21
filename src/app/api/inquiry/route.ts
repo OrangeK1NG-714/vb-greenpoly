@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { getVisitorInfo } from "@/lib/geo";
+import { apiLimiters, rejectCrossSite, rejectRateLimited, requestBodyErrorResponse } from "@/lib/api-security";
+import { readJsonBody } from "@/lib/request-security";
 
 export const runtime = "nodejs";
 
@@ -21,17 +23,24 @@ const InquirySchema = z.object({
   utmSource: z.string().max(128).optional(),
   utmMedium: z.string().max(128).optional(),
   utmCampaign: z.string().max(128).optional(),
-});
+  website: z.string().max(256).optional(),
+}).strict();
 
 export async function POST(req: NextRequest) {
+  const crossSite = rejectCrossSite(req);
+  if (crossSite) return crossSite;
+  const limited = rejectRateLimited(req, apiLimiters.inquiry);
+  if (limited) return limited;
+
   try {
-    const body = await req.json();
+    const body = await readJsonBody(req, 16 * 1024);
     const parsed = InquirySchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json({ ok: false, error: "invalid_payload" }, { status: 400 });
     }
 
-    const { grade, message, ...rest } = parsed.data;
+    const { grade, message, website, ...rest } = parsed.data;
+    if (website) return NextResponse.json({ ok: true });
     const visitor = await getVisitorInfo();
 
     // Stash grade code in message tail so we don't need a schema change.
@@ -61,6 +70,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ ok: true, id: inquiry.id });
   } catch (err) {
+    const inputError = requestBodyErrorResponse(err);
+    if (inputError) return inputError;
     console.error("inquiry error", err);
     return NextResponse.json({ ok: false, error: "server_error" }, { status: 500 });
   }

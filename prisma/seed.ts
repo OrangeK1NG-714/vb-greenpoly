@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import { PrismaClient } from "../src/generated/prisma/client";
 import { PrismaLibSql } from "@prisma/adapter-libsql";
 import { PRODUCTS } from "../src/lib/products-data";
+import { getSeedAdminCredentials } from "../src/lib/production-config";
 
 const dbUrl = process.env.DATABASE_URL ?? "file:./dev.db";
 const url = dbUrl.startsWith("file:") ? dbUrl : `file:${dbUrl}`;
@@ -13,18 +14,17 @@ const prisma = new PrismaClient({ adapter });
 
 async function main() {
   // Admin user
-  const adminEmail = process.env.SEED_ADMIN_EMAIL ?? "admin@greenpoly.com";
-  const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? "changeme123";
+  const { email: adminEmail, password: adminPassword } = getSeedAdminCredentials();
   const passwordHash = await bcrypt.hash(adminPassword, 10);
 
   await prisma.adminUser.upsert({
     where: { email: adminEmail },
-    update: { passwordHash },
+    update: {},
     create: { email: adminEmail, passwordHash, name: "Admin", role: "ADMIN" },
   });
 
-  console.log(`✓ Admin user: ${adminEmail} / ${adminPassword}`);
-  console.log(`  CHANGE THE PASSWORD before deploying.`);
+  console.log(`✓ Admin user ensured: ${adminEmail}`);
+  console.log("  Existing administrator credentials were left unchanged.");
 
   // Products
   for (const cat of PRODUCTS) {

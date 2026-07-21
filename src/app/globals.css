@@ -16,7 +16,7 @@ html {
 body {
   color: #14211c;
   background: var(--sand);
-  font-family: var(--font-sans), var(--font-thai), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-sans), "Noto Sans Thai", Tahoma, ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Thai UI reads better with a touch more line-height and no italics. */

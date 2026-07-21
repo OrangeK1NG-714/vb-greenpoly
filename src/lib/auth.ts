@@ -3,12 +3,14 @@
 
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { getAuthSecret } from "@/lib/production-config";
 
-const SECRET = new TextEncoder().encode(
-  process.env.AUTH_SECRET ?? "dev-secret-change-me-in-production"
-);
 const COOKIE_NAME = "gp_admin";
 const TOKEN_TTL = 60 * 60 * 24 * 7; // 7 days
+
+function getSigningKey() {
+  return new TextEncoder().encode(getAuthSecret());
+}
 
 export type AdminToken = {
   id: string;
@@ -21,12 +23,12 @@ export async function signAdminToken(payload: AdminToken): Promise<string> {
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime(`${TOKEN_TTL}s`)
-    .sign(SECRET);
+    .sign(getSigningKey());
 }
 
 export async function verifyAdminToken(token: string): Promise<AdminToken | null> {
   try {
-    const { payload } = await jwtVerify(token, SECRET);
+    const { payload } = await jwtVerify(token, getSigningKey());
     if (!payload.id || !payload.email) return null;
     return {
       id: String(payload.id),
@@ -50,7 +52,7 @@ export async function setAdminCookie(token: string) {
   c.set(COOKIE_NAME, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: "strict",
     path: "/",
     maxAge: TOKEN_TTL,
   });

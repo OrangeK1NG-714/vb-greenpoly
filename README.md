@@ -35,8 +35,7 @@ npm run dev    # http://localhost:3000
 ```
 
 **管理后台**：访问 `http://localhost:3000/admin/login`
-默认账号：`admin@greenpoly.com` / `changeme123`
-⚠️ 部署前在 `.env` 修改 `SEED_ADMIN_PASSWORD` 后重新 seed
+本地开发可使用 `.env.example` 中的种子账号；它只能用于本机。生产环境会拒绝默认密码、短于 12 个字符的管理员密码，以及弱于 32 个字符的 `AUTH_SECRET`。
 
 ## 📁 项目结构
 
@@ -92,6 +91,8 @@ npm run dev           # 开发服务器
 npm run build         # 生产构建
 npm run start         # 启动生产构建
 npm run lint          # ESLint
+npm test              # 生产配置防呆测试
+npm run check         # 测试 + lint + 生产构建
 npm run db:migrate    # 新建并应用迁移
 npm run db:generate   # 重生成 Prisma client
 npm run db:seed       # 灌入 admin + 产品
@@ -161,7 +162,7 @@ SEED_ADMIN_PASSWORD="换成你自己的强密码"
 
 ```bash
 npx prisma migrate deploy     # 建 prod.db 表结构
-npm run db:seed               # 灌 admin 账号 + 产品（只需一次）
+npm run db:seed               # 首次灌 admin + 产品；重复执行不会重设现有管理员密码
 npm run build                 # 生产构建
 ```
 
