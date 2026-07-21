@@ -57,7 +57,7 @@ export default async function TrafficPage() {
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
-        <Panel title="By country">
+        <Panel title="By country (edge location)">
           <SimpleList items={t.byCountry.map(c => ({ key: c.country ?? "Unknown", count: c._count.country }))} />
         </Panel>
 

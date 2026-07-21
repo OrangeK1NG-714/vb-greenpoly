@@ -6,6 +6,7 @@ import { getTranslations } from "next-intl/server";
 import { PRODUCTS, getProduct, pick } from "@/lib/products-data";
 import { locales, type Locale } from "@/i18n/config";
 import { waLink } from "@/lib/site";
+import { localizedAlternates, localizedUrl } from "@/lib/seo";
 
 export function generateStaticParams() {
   return PRODUCTS.flatMap((p) =>
@@ -24,6 +25,13 @@ export async function generateMetadata({
   return {
     title: pick(product.name, locale as Locale),
     description: pick(product.shortDesc, locale as Locale),
+    alternates: localizedAlternates(locale, `/products/${slug}`),
+    openGraph: {
+      title: pick(product.name, locale as Locale),
+      description: pick(product.shortDesc, locale as Locale),
+      url: localizedUrl(locale, `/products/${slug}`),
+      images: [{ url: product.hero }],
+    },
   };
 }
 
@@ -41,15 +49,19 @@ export default async function ProductDetail({
   const t = await getTranslations("products");
   const localePath = locale === "en" ? "" : `/${locale}`;
   const lang = locale as Locale;
+  const productUrl = localizedUrl(locale, `/products/${slug}`);
 
   // JSON-LD for SEO + GEO
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
+    "@id": `${productUrl}#product`,
     name: pick(product.name, lang),
     description: pick(product.shortDesc, lang),
-    image: product.hero,
+    url: productUrl,
+    image: [new URL(product.hero, productUrl).toString()],
     brand: { "@type": "Brand", name: "GreenPoly" },
+    manufacturer: { "@type": "Organization", name: "GreenPoly Recycling Co., Ltd." },
     offers: {
       "@type": "AggregateOffer",
       priceCurrency: "USD",
@@ -60,9 +72,20 @@ export default async function ProductDetail({
     },
   };
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: localizedUrl(locale) },
+      { "@type": "ListItem", position: 2, name: "Products", item: localizedUrl(locale, "/products") },
+      { "@type": "ListItem", position: 3, name: pick(product.name, lang), item: productUrl },
+    ],
+  };
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
 
       <div className="bg-slate-50 py-4 border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 text-sm text-slate-500">

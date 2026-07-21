@@ -51,6 +51,10 @@ export const PRODUCTS: ProductCategory[] = [
     shortDesc: {
       en: "Recycled ABS from appliance shells and electronic housings. Stable impact strength, good moldability. Black / natural / custom color, with or without flame retardant.",
       zh: "来自家电外壳与电子电器壳料的再生 ABS。冲击强度稳定，注塑性好。可提供黑色、本色及定制色，可选阻燃。",
+      vi: "Hạt ABS tái chế từ vỏ thiết bị gia dụng và vỏ điện tử. Độ bền va đập ổn định, dễ ép phun. Có màu đen, tự nhiên hoặc theo yêu cầu, tùy chọn chống cháy.",
+      id: "ABS daur ulang dari cangkang peralatan rumah tangga dan housing elektronik. Kekuatan bentur stabil dan mudah dicetak. Tersedia hitam, natural, atau warna khusus, dengan atau tanpa tahan api.",
+      th: "เม็ด ABS รีไซเคิลจากเปลือกเครื่องใช้ไฟฟ้าและชิ้นส่วนอิเล็กทรอนิกส์ ความทนแรงกระแทกสม่ำเสมอ ขึ้นรูปง่าย มีสีดำ สีธรรมชาติ หรือสีสั่งทำ พร้อมตัวเลือกสารหน่วงไฟ",
+      ms: "ABS kitar semula daripada perumah peralatan rumah dan elektronik. Kekuatan hentakan stabil dan mudah dibentuk. Tersedia dalam hitam, asli atau warna tersuai, dengan atau tanpa kalis api.",
     },
     hero: "/images/products/abs.jpg",
     badge: "bestSeller",
@@ -80,6 +84,10 @@ export const PRODUCTS: ProductCategory[] = [
     shortDesc: {
       en: "High-impact polystyrene recycled from refrigerator liners, yogurt cups and disposable cutlery. Excellent toughness, easy thermoforming, low odor.",
       zh: "来源于冰箱内胆、酸奶杯及一次性餐具的再生 HIPS。抗冲击好，易热成型，气味低。",
+      vi: "HIPS tái chế từ lớp lót tủ lạnh, cốc sữa chua và dao thìa dùng một lần. Độ dai tốt, dễ tạo hình nhiệt và mùi thấp.",
+      id: "HIPS daur ulang dari liner lemari es, cup yogurt, dan alat makan sekali pakai. Ketangguhan baik, mudah thermoforming, dan berbau rendah.",
+      th: "HIPS รีไซเคิลจากแผ่นบุภายในตู้เย็น ถ้วยโยเกิร์ต และช้อนส้อมใช้แล้วทิ้ง ทนแรงกระแทกดี ขึ้นรูปด้วยความร้อนได้ง่าย และมีกลิ่นต่ำ",
+      ms: "HIPS kitar semula daripada pelapik peti sejuk, bekas yogurt dan peralatan makan pakai buang. Tahan lasak, mudah termoform dan berbau rendah.",
     },
     hero: "/images/products/hips.jpg",
     badge: "highImpact",
@@ -109,6 +117,10 @@ export const PRODUCTS: ProductCategory[] = [
     shortDesc: {
       en: "Injection and extrusion-grade recycled polypropylene from clean post-industrial scrap. Homopolymer and copolymer available; optional talc / CaCO3 filling.",
       zh: "来自洁净工业边角料的注塑及挤出级再生聚丙烯。可提供均聚与共聚牌号，可定制滑石粉/碳酸钙填充。",
+      vi: "PP tái chế cấp ép phun và đùn từ phế liệu công nghiệp sạch. Có homopolymer và copolymer; tùy chọn độn talc hoặc CaCO3.",
+      id: "Polipropilena daur ulang untuk injection dan ekstrusi dari scrap industri bersih. Tersedia homopolimer dan kopolimer; pengisi talc atau CaCO3 opsional.",
+      th: "PP รีไซเคิลเกรดฉีดและรีดขึ้นรูปจากเศษอุตสาหกรรมที่สะอาด มีทั้งโฮโมพอลิเมอร์และโคพอลิเมอร์ พร้อมตัวเลือกเติมทัลก์หรือ CaCO3",
+      ms: "Polipropilena kitar semula gred suntikan dan penyemperitan daripada sisa industri yang bersih. Homopolimer dan kopolimer tersedia; pengisi talkum atau CaCO3 adalah pilihan.",
     },
     hero: "/images/products/pp.jpg",
     badge: "highDemand",
@@ -138,6 +150,10 @@ export const PRODUCTS: ProductCategory[] = [
     shortDesc: {
       en: "General-purpose polystyrene with high transparency, suitable for disposable cutlery, CD cases, stationery and light covers. Crystal clear or color matched.",
       zh: "高透明通用聚苯乙烯，适用于一次性餐具、CD 盒、文具、灯罩等。可做水晶透明或定制色。",
+      vi: "Polystyrene mục đích chung có độ trong cao, phù hợp cho dao thìa dùng một lần, hộp CD, văn phòng phẩm và chụp đèn. Có loại trong suốt hoặc phối màu.",
+      id: "Polistirena serbaguna dengan transparansi tinggi, cocok untuk alat makan sekali pakai, kotak CD, alat tulis, dan penutup lampu. Tersedia bening kristal atau warna khusus.",
+      th: "โพลีสไตรีนใช้งานทั่วไปที่มีความใสสูง เหมาะกับช้อนส้อมใช้แล้วทิ้ง กล่อง CD เครื่องเขียน และฝาครอบโคมไฟ มีทั้งใสแบบคริสตัลหรือสีสั่งทำ",
+      ms: "Polistirena guna am dengan ketelusan tinggi, sesuai untuk peralatan makan pakai buang, bekas CD, alat tulis dan penutup lampu. Tersedia jernih seperti kristal atau padanan warna.",
     },
     hero: "/images/products/gpps.jpg",
     badge: "transparent",

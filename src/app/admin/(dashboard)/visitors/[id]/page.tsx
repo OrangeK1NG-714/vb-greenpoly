@@ -85,8 +85,11 @@ export default async function VisitorDetail({ params }: { params: Promise<{ id: 
       {/* IP + Location */}
       <div className="bg-white border border-slate-200 rounded-xl p-6">
         <h2 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
-          🌍 IP & location
+          🌍 IP & edge location
         </h2>
+        <p className="text-xs text-slate-500 mb-4">
+          Country is provided by the trusted CDN edge. City, region and map coordinates appear only when the host forwards them; all IP-based locations are approximate.
+        </p>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <Field label="IP address" value={session.ipAddress} mono />
           <Field

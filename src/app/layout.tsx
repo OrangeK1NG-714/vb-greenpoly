@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { CONTACT } from "@/lib/site";
+import { siteUrl } from "@/lib/seo";
 import "./globals.css";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://greenpoly.com";
 
 // Keep builds self-contained; Thai glyphs use the system fallback declared in globals.css.
 const siteSans = localFont({
@@ -17,7 +16,7 @@ const DESCRIPTION =
   "Small Ningbo factory supplying recycled ABS, HIPS, PP and GPPS pellets to injection molders across Vietnam, Indonesia, Thailand and Malaysia. Low 1-ton MOQ, batch COA, direct-from-owner pricing.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
+  metadataBase: new URL(siteUrl),
   title: {
     default: TITLE_DEFAULT,
     template: `%s | ${CONTACT.brand}`,
@@ -33,7 +32,6 @@ export const metadata: Metadata = {
     "injection molding raw material",
     "Vietnam Indonesia Thailand Malaysia plastic supplier",
   ],
-  alternates: { canonical: "/" },
   // OpenGraph drives the link-preview cards buyers see when a URL is pasted into
   // WhatsApp / Zalo / LINE / Facebook — the dominant sharing channels across SEA.
   openGraph: {
@@ -41,7 +39,7 @@ export const metadata: Metadata = {
     siteName: CONTACT.brand,
     title: TITLE_DEFAULT,
     description: DESCRIPTION,
-    url: SITE_URL,
+    url: siteUrl,
     locale: "en_US",
     images: [
       {

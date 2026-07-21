@@ -7,13 +7,15 @@
 
 | 项 | 状态 |
 |---|---|
-| sitemap.xml(全页面 × 6 语言,带 hreflang) | ✅ 自动生成 |
+| sitemap.xml(全页面 × 6 语言,带互相指向的 hreflang) | ✅ 自动生成 |
 | robots.txt(放行全部爬虫,屏蔽 /admin /api) | ✅ 含 AI 爬虫(GPTBot 等默认放行) |
 | llms.txt(AI 引擎专用站点说明,诚实叙事) | ✅ `/llms.txt` |
-| 每页每语言独立 title/description | ✅ 越南买家看到越南语标题 |
-| 结构化数据:Organization(全站)+ Product(产品页) | ✅ JSON-LD |
+| 每页每语言独立 title/description/canonical | ✅ 避免语言页互相抢排名 |
+| 结构化数据:Organization(全站)+ Product/Breadcrumb(产品页) | ✅ JSON-LD |
 | 社交/聊天分享卡片(WhatsApp/Zalo/LINE 贴链接出图) | ✅ OpenGraph |
 | 移动端速度(全静态页 + CDN) | ✅ 天然快 |
+
+> 代码只解决可抓取性，不能代替公开部署与搜索引擎验证。源站地域选新加坡即可；Google 是否收录不取决于是否使用“国外品牌”云厂商，而取决于海外爬虫能否稳定访问正式 HTTPS URL。
 
 ## 二、上线后第 1 天:解决"是否被谷歌收录"
 
