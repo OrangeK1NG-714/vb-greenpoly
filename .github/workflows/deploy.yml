@@ -30,17 +30,22 @@ jobs:
     - name: Push code to server
       # 服务器连不上 GitHub（GFW），所以不再在服务器上 git pull ——
       # 由 CI  runner 把代码打包直接推过去。tar 流不含 .git/env/db，
-      # 服务器上的 .env、prod.db 不受影响。
+      # 每个提交上传到独立 release 目录，服务器上的 .env、prod.db 不受影响。
+      env:
+        RELEASE_DIR: /var/www/greenpoly-releases/${{ github.sha }}
       run: |
         mkdir -p ~/.ssh
         printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
         chmod 600 ~/.ssh/deploy_key
+        ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
+          ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+          "mkdir -p '$RELEASE_DIR'"
         tar czf - \
           --exclude=.git --exclude=node_modules --exclude=.next \
           --exclude=dev.db --exclude=prod.db --exclude=.env --exclude=".env.*" \
           . | ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
           ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
-          "cd /var/www/greenpoly && tar xzf -"
+          "tar xzf - -C '$RELEASE_DIR'"
 
     - name: Build and restart on server
       uses: appleboy/ssh-action@v1.0.3
@@ -50,9 +55,14 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22
         script: |
-          # set -e: 任何一步失败都要让部署失败——不要再静默假成功
           set -e
-          cd /var/www/greenpoly
+          RELEASE_DIR="/var/www/greenpoly-releases/${{ github.sha }}"
+          SHARED_DIR="/var/www/greenpoly"
+          PREVIOUS_DIR="$(readlink -f /var/www/greenpoly-current 2>/dev/null || true)"
+          if [ -z "$PREVIOUS_DIR" ]; then PREVIOUS_DIR="$SHARED_DIR"; fi
+
+          cd "$RELEASE_DIR"
+          ln -sfn "$SHARED_DIR/.env" .env
 
           # 完整安装依赖(Next 构建需要 devDependencies)
           # 主用国内镜像源;镜像还没同步的新版本(如 prisma 7.9.0)回退官方源
@@ -60,22 +70,63 @@ jobs:
             npm install --registry=https://registry.npmjs.org --no-audit --no-fund
 
           # 先生成 Prisma 客户端,再构建(顺序不能反)
-          export DATABASE_URL="file:/var/www/greenpoly/prod.db"
+          export DATABASE_URL="file:$SHARED_DIR/prod.db"
           npx prisma generate
           npm run build
 
-          # 数据库迁移
+          # 迁移共享数据库；迁移必须保持向后兼容，旧 release 才能回滚。
           npx prisma migrate deploy
 
-          # 用 PM2 启动或重启服务(固定 3002 端口,避开宝塔占用的 3000)
-          if pm2 describe greenpoly > /dev/null 2>&1; then
-            PORT=3002 pm2 restart greenpoly --update-env
-          else
-            PORT=3002 pm2 start npm --name greenpoly -- start
+          # 先在 3003 启动 canary。除了首页，还验证后台保护和浏览器同源登录。
+          pm2 delete greenpoly-canary > /dev/null 2>&1 || true
+          PORT=3003 pm2 start npm --name greenpoly-canary --cwd "$RELEASE_DIR" -- start
+
+          CANARY_OK=0
+          for attempt in $(seq 1 20); do
+            HOME_STATUS="$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:3003/ || true)"
+            SALES_STATUS="$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:3003/admin/sales || true)"
+            LOGIN_STATUS="$(curl -sS -o /dev/null -w '%{http_code}' \
+              -X POST http://127.0.0.1:3003/api/admin/login \
+              -H 'content-type: application/json' \
+              -H 'origin: https://green.richardq.tech' \
+              --data '{"email":"invalid@example.test","password":"invalid-password"}' || true)"
+            if [ "$HOME_STATUS" = "200" ] && [ "$SALES_STATUS" = "307" ] && [ "$LOGIN_STATUS" = "401" ]; then
+              CANARY_OK=1
+              break
+            fi
+            sleep 1
+          done
+
+          pm2 delete greenpoly-canary > /dev/null 2>&1 || true
+          if [ "$CANARY_OK" != "1" ]; then
+            echo "Canary health check failed"
+            exit 1
           fi
 
+          # Canary 通过后再切换正式端口；失败则恢复上一个 release。
+          pm2 delete greenpoly > /dev/null 2>&1 || true
+          PORT=3002 pm2 start npm --name greenpoly --cwd "$RELEASE_DIR" -- start
+
+          PRODUCTION_OK=0
+          for attempt in $(seq 1 20); do
+            if curl -fsS http://127.0.0.1:3002/ > /dev/null; then
+              PRODUCTION_OK=1
+              break
+            fi
+            sleep 1
+          done
+
+          if [ "$PRODUCTION_OK" != "1" ]; then
+            echo "Production health check failed; rolling back to $PREVIOUS_DIR"
+            pm2 delete greenpoly > /dev/null 2>&1 || true
+            PORT=3002 pm2 start npm --name greenpoly --cwd "$PREVIOUS_DIR" -- start
+            pm2 save
+            exit 1
+          fi
+
+          ln -sfn "$RELEASE_DIR" /var/www/greenpoly-current
           pm2 save
-          echo "✅ GreenPoly deployed successfully"
+          echo "✅ GreenPoly deployed successfully: $RELEASE_DIR"
 
     - name: Bark 通知
       if: always()
