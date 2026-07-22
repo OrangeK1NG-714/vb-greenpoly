@@ -1,6 +1,8 @@
 # GreenPoly — 塑料回料独立站（前后端分离 / 含管理后台 / 自定义埋点）
 
-Next.js 14 全栈应用：公开站（多语言）+ 管理后台 + 自定义埋点 + GEO 优化基础设施。
+Next.js 16 全栈应用：公开站（多语言）+ 管理后台 + 自定义埋点 + GEO 优化基础设施。
+
+当前线上地址：<https://green.richardq.tech>。文档中的 `greenpoly.com` 是未来独立品牌域名示例，当前生产 canonical 由 `NEXT_PUBLIC_SITE_URL` 注入。
 
 ## 🎯 它包含什么
 
@@ -22,6 +24,7 @@ Next.js 14 全栈应用：公开站（多语言）+ 管理后台 + 自定义埋�
 - 登录：邮箱密码 + JWT cookie
 - **Dashboard**：KPI 卡片 + Top 页面 + Top 国家 + 询盘状态分布
 - **Inquiries**：列表 + 状态筛选（NEW/CONTACTED/QUOTED/NEGOTIATING/WON/LOST）+ 内联状态切换 + 详情页（**含完整 session 行为轨迹**）+ 销售内部备注
+- **Sales desk**：真实询盘待办队列 + FOB/CIF 报价测算 + 英/法/葡人工跟进草稿；不自动发邮件，不依赖 mock 外部服务
 - **Analytics**：转化漏斗 · 产品页热度 · Top CTA · 滚动深度分布 · 平均停留时长
 - **Traffic**：地理来源 · UTM · referrer · 语言分布
 
@@ -76,6 +79,7 @@ greenpoly/
 │   │   │       ├── page.tsx              # 总览
 │   │   │       ├── inquiries/page.tsx    # 询盘列表
 │   │   │       ├── inquiries/[id]/       # 询盘详情 + session 轨迹
+│   │   │       ├── sales/page.tsx         # 销售待办 + 报价 + 跟进草稿
 │   │   │       ├── analytics/page.tsx    # 漏斗 + 产品热度
 │   │   │       ├── traffic/page.tsx      # 地理 + UTM
 │   │   │       └── layout.tsx            # auth + sidebar
@@ -94,6 +98,7 @@ greenpoly/
 │   │   ├── auth.ts            # JWT cookie auth
 │   │   ├── tracking.ts        # 前端埋点 SDK
 │   │   ├── geo.ts             # 提取 IP/country 头
+│   │   ├── sales-tools.ts     # 报价、待办和多语言草稿纯逻辑
 │   │   └── products-data.ts   # 产品目录
 │   ├── i18n/                  # next-intl 配置
 │   └── middleware.ts          # 多语言中间件
