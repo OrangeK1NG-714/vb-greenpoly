@@ -161,6 +161,10 @@ export default async function DashboardPage() {
               <div className="font-semibold text-sm">📬 New inquiries</div>
               <div className="text-xs text-slate-500 mt-1">{s.newInquiries} waiting</div>
             </Link>
+            <Link href="/admin/sales" className="border border-slate-200 rounded-lg p-4 hover:bg-slate-50 transition">
+              <div className="font-semibold text-sm">◆ Sales desk</div>
+              <div className="text-xs text-slate-500 mt-1">Pipeline, quotes, follow-up</div>
+            </Link>
             <Link href="/admin/analytics" className="border border-slate-200 rounded-lg p-4 hover:bg-slate-50 transition">
               <div className="font-semibold text-sm">📈 Funnel analysis</div>
               <div className="text-xs text-slate-500 mt-1">Conversion paths</div>
@@ -169,10 +173,6 @@ export default async function DashboardPage() {
               <div className="font-semibold text-sm">🌍 Traffic sources</div>
               <div className="text-xs text-slate-500 mt-1">UTM + referrers</div>
             </Link>
-            <a href="/" target="_blank" className="border border-slate-200 rounded-lg p-4 hover:bg-slate-50 transition">
-              <div className="font-semibold text-sm">↗ View public site</div>
-              <div className="text-xs text-slate-500 mt-1">Opens new tab</div>
-            </a>
           </div>
         </Panel>
       </div>
