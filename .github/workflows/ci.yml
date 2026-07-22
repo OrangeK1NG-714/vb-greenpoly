@@ -1,0 +1,48 @@
+name: CI
+
+# PR 与非主分支 push 时只做构建验证和测试，不部署；
+# main 分支的 push 由 deploy.yml 负责（含构建验证 + canary 部署）。
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches-ignore: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    # DATABASE_URL 仅用于 Prisma 客户端生成与构建期校验，不连接真实数据库；
+    # NEXT_PUBLIC_* 为构建时注入的公开站点地址，与 deploy.yml 保持一致。
+    env:
+      NEXT_PUBLIC_SITE_URL: https://green.richardq.tech
+      DATABASE_URL: file:./ci-build.db
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: npm
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Generate Prisma client
+      # 测试和构建都引用生成的 Prisma 客户端，必须先跑（顺序不能反）
+      run: npx prisma generate
+
+    - name: Run tests
+      run: npm test
+
+    - name: Lint
+      run: npm run lint
+
+    - name: Build
+      run: npm run build
