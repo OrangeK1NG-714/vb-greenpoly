@@ -24,6 +24,8 @@ const TrackSchema = z.object({
   utmMedium: z.string().max(128).optional(),
   utmCampaign: z.string().max(128).optional(),
   locale: z.enum(["en", "vi", "id", "th", "ms", "zh"]).optional(),
+  sessionStartedAt: z.number().int().min(0).max(8_640_000_000_000).optional(),
+  eventSequence: z.number().int().min(1).max(10_000_000).optional(),
 }).strict();
 
 export async function POST(req: NextRequest) {
@@ -47,7 +49,9 @@ export async function POST(req: NextRequest) {
         eventName: data.eventName,
         page: data.page,
         sessionId: data.sessionId,
-        properties: data.properties ? JSON.stringify(data.properties) : null,
+        properties: data.properties || data.eventSequence
+          ? JSON.stringify({ ...data.properties, _eventSequence: data.eventSequence })
+          : null,
         referrer: data.referrer ?? visitor.referrer ?? null,
         utmSource: data.utmSource ?? null,
         utmMedium: data.utmMedium ?? null,
@@ -60,52 +64,40 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Upsert session
-    const existing = await prisma.session.findUnique({ where: { id: data.sessionId } });
-    if (!existing) {
-      await prisma.session.create({
-        data: {
-          id: data.sessionId,
-          ipAddress: visitor.ip,
-          country: visitor.country,
-          countryCode: visitor.countryCode,
-          region: visitor.region,
-          city: visitor.city,
-          latitude: visitor.latitude,
-          longitude: visitor.longitude,
-          timezone: visitor.timezone,
-          userAgent: visitor.userAgent,
-          referrer: data.referrer ?? visitor.referrer ?? null,
-          utmSource: data.utmSource ?? null,
-          utmMedium: data.utmMedium ?? null,
-          utmCampaign: data.utmCampaign ?? null,
-          locale: data.locale ?? null,
-          pageViews: data.eventName === "page_view" ? 1 : 0,
-        },
-      });
-    } else {
-      const updateData: Record<string, unknown> = { lastSeen: new Date() };
-      if (data.eventName === "page_view") {
-        updateData.pageViews = existing.pageViews + 1;
-      }
-      if (data.eventName === "dwell" && data.properties?.dwellMs) {
-        const ms = Number(data.properties.dwellMs);
-        if (Number.isFinite(ms) && ms > 0 && ms < 30 * 60 * 1000) {
-          updateData.totalDwellMs = Math.max(existing.totalDwellMs, ms);
-        }
-      }
-      // Backfill location/IP on existing sessions if we now know more
-      if (!existing.ipAddress && visitor.ip) updateData.ipAddress = visitor.ip;
-      if (!existing.country && visitor.country) updateData.country = visitor.country;
-      if (!existing.countryCode && visitor.countryCode) updateData.countryCode = visitor.countryCode;
-      if (!existing.region && visitor.region) updateData.region = visitor.region;
-      if (!existing.city && visitor.city) updateData.city = visitor.city;
-      if (existing.latitude == null && visitor.latitude != null) updateData.latitude = visitor.latitude;
-      if (existing.longitude == null && visitor.longitude != null) updateData.longitude = visitor.longitude;
-      if (!existing.timezone && visitor.timezone) updateData.timezone = visitor.timezone;
-
-      await prisma.session.update({ where: { id: data.sessionId }, data: updateData });
-    }
+    const sessionStartedAt = data.sessionStartedAt
+      ? new Date(data.sessionStartedAt)
+      : new Date();
+    const dwellMs = data.eventName === "dwell" ? Number(data.properties?.dwellMs) : 0;
+    await prisma.session.upsert({
+      where: { id: data.sessionId },
+      create: {
+        id: data.sessionId,
+        firstSeen: sessionStartedAt,
+        ipAddress: visitor.ip,
+        country: visitor.country,
+        countryCode: visitor.countryCode,
+        region: visitor.region,
+        city: visitor.city,
+        latitude: visitor.latitude,
+        longitude: visitor.longitude,
+        timezone: visitor.timezone,
+        userAgent: visitor.userAgent,
+        referrer: data.referrer ?? visitor.referrer ?? null,
+        utmSource: data.utmSource ?? null,
+        utmMedium: data.utmMedium ?? null,
+        utmCampaign: data.utmCampaign ?? null,
+        locale: data.locale ?? null,
+        pageViews: data.eventName === "page_view" ? 1 : 0,
+        totalDwellMs: Number.isFinite(dwellMs) && dwellMs > 0 && dwellMs < 30 * 60 * 1000 ? dwellMs : 0,
+      },
+      update: {
+        lastSeen: new Date(),
+        pageViews: data.eventName === "page_view" ? { increment: 1 } : undefined,
+        totalDwellMs: Number.isFinite(dwellMs) && dwellMs > 0 && dwellMs < 30 * 60 * 1000
+          ? Math.floor(dwellMs)
+          : undefined,
+      },
+    });
 
     return NextResponse.json({ ok: true });
   } catch (err) {

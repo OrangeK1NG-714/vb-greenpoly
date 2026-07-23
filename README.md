@@ -55,6 +55,18 @@ GO_BACKEND_ADMIN_TOKEN="..."                  # = go-backend 的 METRICS_ADMIN_T
 切换后 `/admin` 的询盘列表、详情、状态修改、Dashboard 询盘统计全部读写 go-backend；
 埋点（track / sessions / events）仍走本地 Prisma，不受影响。
 
+## 内部脱敏营销聚合
+
+GreenPoly 始终是访客行为数据的所有者。配置独立的 `GREENPOLY_INTERNAL_STATS_TOKEN` 后，统一 Go 后端可通过私网读取：
+
+```http
+GET /api/internal/marketing-stats?days=1..365
+Authorization: Bearer <GREENPOLY_INTERNAL_STATS_TOKEN>
+```
+
+接口只返回滚动 N×24 小时的活跃访客、产品访客、CTA 访客、表单提交访客，以及经过服务端白名单化和低计数抑制的页面/来源/国家/语言桶。漏斗按事件时间构造有序嵌套人群；国家、语言和来源统一采用窗口内新访客首次归因。计数小于 5 的桶合并为 `other`；绝不返回访客 ID、IP、原始路径、referrer、UTM、properties 或询盘明细。
+
+该令牌必须与 Go 的同名配置一致且独立于所有其他密钥。Route Handler 会拒绝公网 Host，公共 Caddy/nginx 还必须对 `/api/internal/**` 返回 404；Go 只通过回环或 RFC 1918 私网地址调用，形成应用层与反向代理双层阻断。
 
 ## 📁 项目结构
 
@@ -175,6 +187,7 @@ npm ci
 DATABASE_URL="file:./prod.db"
 NEXT_PUBLIC_SITE_URL="https://greenpoly.com"
 AUTH_SECRET="$(openssl rand -base64 32)"   # 复制它的输出填进去，别原样保留
+GREENPOLY_INTERNAL_STATS_TOKEN="<另一份独立 openssl rand -base64 32 输出>"
 SEED_ADMIN_EMAIL="richardq0714@gmail.com"
 SEED_ADMIN_PASSWORD="换成你自己的强密码"
 ```
@@ -209,6 +222,8 @@ sudo apt-get update && sudo apt-get install -y caddy
 
 ```
 greenpoly.com, www.greenpoly.com {
+    @internal path /api/internal /api/internal/*
+    respond @internal 404
     reverse_proxy localhost:3000
     encode gzip zstd
 }

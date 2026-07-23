@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { getAuthSecret, getSeedAdminCredentials } from "../src/lib/production-config";
+import { getAuthSecret, getMarketingStatsToken, getSeedAdminCredentials } from "../src/lib/production-config";
 
 test("development permits local defaults", () => {
   assert.equal(getAuthSecret({ NODE_ENV: "development" }), "local-development-only-not-for-production");
@@ -22,6 +22,23 @@ test("production rejects missing, default, and short authentication secrets", ()
 test("production accepts a strong authentication secret", () => {
   const secret = "a-unique-production-auth-secret-that-is-long-enough";
   assert.equal(getAuthSecret({ NODE_ENV: "production", AUTH_SECRET: secret }), secret);
+});
+
+test("production requires a strong internal marketing stats token", () => {
+  assert.throws(() => getMarketingStatsToken({ NODE_ENV: "production" }), /GREENPOLY_INTERNAL_STATS_TOKEN/);
+  assert.throws(
+    () => getMarketingStatsToken({ NODE_ENV: "production", GREENPOLY_INTERNAL_STATS_TOKEN: "too-short" }),
+    /GREENPOLY_INTERNAL_STATS_TOKEN/
+  );
+  const token = "an-independent-greenpoly-token-with-32-plus-bytes";
+  assert.equal(
+    getMarketingStatsToken({ NODE_ENV: "production", GREENPOLY_INTERNAL_STATS_TOKEN: token }),
+    token
+  );
+});
+
+test("development permits an unconfigured internal marketing stats token", () => {
+  assert.equal(getMarketingStatsToken({ NODE_ENV: "development" }), "");
 });
 
 test("production rejects a default or short seeded admin password", () => {

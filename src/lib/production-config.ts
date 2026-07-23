@@ -2,6 +2,7 @@ const DEVELOPMENT_AUTH_SECRET = "local-development-only-not-for-production";
 const DEVELOPMENT_ADMIN_PASSWORD = "changeme123";
 const MIN_AUTH_SECRET_LENGTH = 32;
 const MIN_PRODUCTION_PASSWORD_LENGTH = 12;
+const MIN_INTERNAL_STATS_TOKEN_LENGTH = 32;
 
 type Environment = Record<string, string | undefined>;
 
@@ -22,6 +23,18 @@ export function getAuthSecret(env: Environment = process.env): string {
   }
 
   return secret || DEVELOPMENT_AUTH_SECRET;
+}
+
+export function getMarketingStatsToken(env: Environment = process.env): string {
+  const token = env.GREENPOLY_INTERNAL_STATS_TOKEN || "";
+
+  if (isProduction(env) && Buffer.byteLength(token) < MIN_INTERNAL_STATS_TOKEN_LENGTH) {
+    throw new Error(
+      `GREENPOLY_INTERNAL_STATS_TOKEN must contain at least ${MIN_INTERNAL_STATS_TOKEN_LENGTH} bytes in production.`
+    );
+  }
+
+  return token;
 }
 
 export function getSeedAdminCredentials(env: Environment = process.env) {

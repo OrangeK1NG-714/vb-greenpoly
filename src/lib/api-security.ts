@@ -10,7 +10,7 @@ import {
 type ApiLimiter = ReturnType<typeof createRateLimiter>;
 
 const globalSecurity = globalThis as unknown as {
-  greenpolyLimiters?: Record<"login" | "inquiry" | "track" | "admin", ApiLimiter>;
+  greenpolyLimiters?: Record<"login" | "inquiry" | "track" | "admin" | "internalStats", ApiLimiter>;
 };
 
 export const apiLimiters = globalSecurity.greenpolyLimiters ?? {
@@ -18,6 +18,7 @@ export const apiLimiters = globalSecurity.greenpolyLimiters ?? {
   inquiry: createRateLimiter({ limit: 12, windowMs: 60 * 60_000 }),
   track: createRateLimiter({ limit: 180, windowMs: 60_000 }),
   admin: createRateLimiter({ limit: 120, windowMs: 15 * 60_000 }),
+  internalStats: createRateLimiter({ limit: 120, windowMs: 60_000, maxKeys: 256 }),
 };
 
 if (process.env.NODE_ENV !== "production") globalSecurity.greenpolyLimiters = apiLimiters;

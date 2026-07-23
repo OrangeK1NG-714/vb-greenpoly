@@ -5,6 +5,8 @@ import { nanoid } from "nanoid";
 
 const SESSION_KEY = "gp_sid";
 const SESSION_FIRST_SEEN_KEY = "gp_first_seen";
+const SESSION_SEQUENCE_KEY = "gp_event_sequence";
+const SESSION_ATTRIBUTION_KEY = "gp_initial_attribution";
 
 export function getOrCreateSession(): string {
   if (typeof window === "undefined") return "";
@@ -13,18 +15,49 @@ export function getOrCreateSession(): string {
     sid = nanoid();
     localStorage.setItem(SESSION_KEY, sid);
     localStorage.setItem(SESSION_FIRST_SEEN_KEY, String(Date.now()));
+    localStorage.removeItem(SESSION_SEQUENCE_KEY);
+    localStorage.removeItem(SESSION_ATTRIBUTION_KEY);
+  } else if (!localStorage.getItem(SESSION_FIRST_SEEN_KEY)) {
+    localStorage.setItem(SESSION_FIRST_SEEN_KEY, String(Date.now()));
   }
   return sid;
 }
 
-function getUtmParams() {
+type InitialAttribution = {
+  referrer?: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+};
+
+function getInitialAttribution(): InitialAttribution {
   if (typeof window === "undefined") return {};
+  const existing = localStorage.getItem(SESSION_ATTRIBUTION_KEY);
+  if (existing) {
+    try {
+      return JSON.parse(existing) as InitialAttribution;
+    } catch {
+      localStorage.removeItem(SESSION_ATTRIBUTION_KEY);
+    }
+  }
+
   const url = new URL(window.location.href);
-  return {
+  const attribution = {
+    referrer: document.referrer || undefined,
     utmSource: url.searchParams.get("utm_source") ?? undefined,
     utmMedium: url.searchParams.get("utm_medium") ?? undefined,
     utmCampaign: url.searchParams.get("utm_campaign") ?? undefined,
   };
+  localStorage.setItem(SESSION_ATTRIBUTION_KEY, JSON.stringify(attribution));
+  return attribution;
+}
+
+function nextEventSequence(): number {
+  if (typeof window === "undefined") return 0;
+  const current = Number.parseInt(localStorage.getItem(SESSION_SEQUENCE_KEY) || "0", 10);
+  const next = Number.isSafeInteger(current) && current >= 0 ? current + 1 : 1;
+  localStorage.setItem(SESSION_SEQUENCE_KEY, String(next));
+  return next;
 }
 
 type TrackPayload = {
@@ -37,12 +70,13 @@ type TrackPayload = {
 export async function track(payload: TrackPayload) {
   if (typeof window === "undefined") return;
   const sessionId = getOrCreateSession();
-  const utm = getUtmParams();
+  const initialAttribution = getInitialAttribution();
   const data = {
     ...payload,
     sessionId,
-    referrer: document.referrer || undefined,
-    ...utm,
+    sessionStartedAt: Number.parseInt(localStorage.getItem(SESSION_FIRST_SEEN_KEY) || "", 10),
+    eventSequence: nextEventSequence(),
+    ...initialAttribution,
   };
   try {
     // Use sendBeacon when available (survives page unload)

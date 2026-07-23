@@ -135,6 +135,8 @@ cat > .env <<'EOF'
 DATABASE_URL="file:/srv/greenpoly/data/prod.db"
 NEXT_PUBLIC_SITE_URL="https://greenpoly.com"
 AUTH_SECRET="<粘贴第0步 openssl 生成的随机串>"
+# 仅供 Go 经回环/私网读取脱敏营销聚合，必须使用独立 32+ 字节随机令牌。
+GREENPOLY_INTERNAL_STATS_TOKEN="<独立 openssl rand -base64 32 输出>"
 SEED_ADMIN_EMAIL="richard@greenpoly.com"
 SEED_ADMIN_PASSWORD="<你的强密码>"
 EOF
@@ -156,6 +158,8 @@ pm2 save && pm2 startup     # 按它输出的提示再执行一行命令
 ```bash
 cat > /etc/caddy/Caddyfile <<'EOF'
 greenpoly.com, www.greenpoly.com {
+    @internal path /api/internal /api/internal/*
+    respond @internal 404
     reverse_proxy localhost:3000
     encode gzip zstd
 }
@@ -164,6 +168,8 @@ systemctl reload caddy
 ```
 
 Caddy 会自动申请并续期 HTTPS 证书,不用管。
+
+> 如果统一 Go 后端与 GreenPoly 部署在同一台服务器，Go 应直接访问 `127.0.0.1` 的 Next.js 端口读取 `/api/internal/marketing-stats`。应用层 Route 会拒绝公网 Host；公共 Caddy/nginx 仍必须对 `/api/internal/*` 返回 404，不能仅依赖 Bearer token，Next.js 端口也不得直接暴露公网。令牌不得复用 `AUTH_SECRET`、`GO_BACKEND_PROJECT_KEY` 或 Go 管理令牌。发布验收需同时确认公网域名返回 404、回环携令牌请求返回 200。
 
 **验收**:浏览器打开 `https://greenpoly.com` —— 应该看到网站;
 `https://greenpoly.com/vi` 是越南语;`/admin` 能登录(用第 4 步设的账号密码)。
