@@ -2,6 +2,7 @@ import SalesWorkspace from "@/components/admin/SalesWorkspace";
 import { prisma } from "@/lib/db";
 import { goBackendEnabled, listInquiriesGo } from "@/lib/go-backend";
 import { PRODUCTS, pick } from "@/lib/products-data";
+import { quoteRecordToData, sampleRecordToData } from "@/lib/sales-records";
 import type { SalesLead } from "@/lib/sales-tools";
 
 export const dynamic = "force-dynamic";
@@ -28,7 +29,11 @@ async function loadSalesLeads(): Promise<SalesLead[]> {
 }
 
 export default async function SalesPage() {
-  const leads = await loadSalesLeads();
+  const [leads, quoteRecords, sampleRecords] = await Promise.all([
+    loadSalesLeads(),
+    prisma.quoteDraft.findMany({ orderBy: { updatedAt: "desc" }, take: 500 }),
+    prisma.sampleConfirmation.findMany({ orderBy: [{ inquiryId: "asc" }, { version: "desc" }], take: 500 }),
+  ]);
   const products = PRODUCTS.map((product) => ({
     value: pick(product.name, "en"),
     label: `${product.category} · ${pick(product.name, "en")}`,
@@ -40,6 +45,8 @@ export default async function SalesPage() {
       products={products}
       asOf={new Date().toISOString()}
       source={goBackendEnabled ? "go-backend" : "local"}
+      initialQuotes={quoteRecords.map(quoteRecordToData)}
+      initialSamples={sampleRecords.map(sampleRecordToData)}
     />
   );
 }

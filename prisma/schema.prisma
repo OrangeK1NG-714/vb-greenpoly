@@ -43,14 +43,79 @@ model Inquiry {
 }
 
 // ============================================================
+// QuoteDraft / SampleConfirmation — operator-owned sales records
+// inquiryId points to the authoritative inquiry source. It is intentionally
+// not a foreign key because inquiries may be served by the Go BFF.
+// ============================================================
+model QuoteDraft {
+  id                    String    @id @default(cuid())
+  inquiryId             String
+  status                String    @default("DRAFT")
+  product               String?
+  grade                 String?
+  quantityMt            Float?
+  quantityUnit          String?
+  currency              String?
+  incoterm              String?
+  originPort            String?
+  destinationPort       String?
+  supplierCostCnyPerMt  Float?
+  inlandAndPortCny      Float?
+  documentsCny          Float?
+  exchangeRateCnyPerUsd Float?
+  targetMarginPercent   Float?
+  oceanFreightUsd       Float?
+  insurancePercent      Float?
+  paymentTerms          String?
+  packaging             String?
+  leadTime              String?
+  validUntil            DateTime?
+  followUpAt            DateTime?
+  sentAt                DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([inquiryId])
+  @@index([status])
+  @@index([followUpAt])
+}
+
+model SampleConfirmation {
+  id                     String    @id @default(cuid())
+  inquiryId              String
+  previousVersionId      String?
+  version                Int
+  status                 String    @default("NEEDS_INFORMATION")
+  product                String?
+  grade                  String?
+  application            String?
+  appearance             String?
+  technicalRequirements  String?
+  quantity               Float?
+  quantityUnit           String?
+  packaging              String?
+  acceptanceCriteria     String?
+  targetConfirmationDate DateTime?
+  customerConfirmedAt    DateTime?
+  handedToFactoryAt      DateTime?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  @@unique([inquiryId, version])
+  @@index([inquiryId])
+  @@index([status])
+  @@index([targetConfirmationDate])
+}
+
+// ============================================================
 // Event — tracking events from the front-end SDK
 // ============================================================
 model Event {
-  id          String   @id @default(cuid())
-  eventName   String   // page_view | dwell | scroll_depth | cta_click | whatsapp_click | sample_request | form_submit | outbound_click
-  page        String
-  sessionId   String
-  properties  String?  // JSON-encoded extra props (button id, scroll %, dwell ms, etc.)
+  id         String  @id @default(cuid())
+  eventName  String // page_view | dwell | scroll_depth | cta_click | whatsapp_click | sample_request | form_submit | outbound_click
+  page       String
+  sessionId  String
+  properties String? // JSON-encoded extra props (button id, scroll %, dwell ms, etc.)
 
   country     String?
   city        String?
@@ -62,7 +127,7 @@ model Event {
   utmCampaign String?
   locale      String?
 
-  createdAt   DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@index([sessionId])
   @@index([eventName])
@@ -75,29 +140,29 @@ model Event {
 // Session — per-visitor aggregate (one per browser session)
 // ============================================================
 model Session {
-  id           String   @id              // sessionId from client (nanoid)
+  id           String   @id // sessionId from client (nanoid)
   firstSeen    DateTime @default(now())
   lastSeen     DateTime @updatedAt
   pageViews    Int      @default(0)
   totalDwellMs Int      @default(0)
 
-  ipAddress    String?
-  country      String?
-  countryCode  String?
-  region       String?
-  city         String?
-  latitude     Float?
-  longitude    Float?
-  isp          String?
-  timezone     String?
-  userAgent    String?
-  referrer     String?
-  utmSource    String?
-  utmMedium    String?
-  utmCampaign  String?
-  locale       String?
+  ipAddress   String?
+  country     String?
+  countryCode String?
+  region      String?
+  city        String?
+  latitude    Float?
+  longitude   Float?
+  isp         String?
+  timezone    String?
+  userAgent   String?
+  referrer    String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  locale      String?
 
-  inquired     Boolean  @default(false)
+  inquired Boolean @default(false)
 
   @@index([country])
   @@index([utmSource])
@@ -109,20 +174,20 @@ model Session {
 // Product — catalog (translations inline for v1)
 // ============================================================
 model Product {
-  id          String   @id @default(cuid())
-  sku         String   @unique
-  slug        String   @unique
-  category    String   // HDPE | PP | PET
+  id       String @id @default(cuid())
+  sku      String @unique
+  slug     String @unique
+  category String // HDPE | PP | PET
 
-  nameEn      String
-  nameZh      String?
-  nameRu      String?
-  nameEs      String?
+  nameEn String
+  nameZh String?
+  nameRu String?
+  nameEs String?
 
-  descEn      String?
-  descZh      String?
-  descRu      String?
-  descEs      String?
+  descEn String?
+  descZh String?
+  descRu String?
+  descEs String?
 
   color       String?
   mfi         String?
@@ -131,12 +196,12 @@ model Product {
   application String?
   priceFrom   Float?
 
-  imageUrl    String?
-  isFeatured  Boolean  @default(false)
-  isActive    Boolean  @default(true)
+  imageUrl   String?
+  isFeatured Boolean @default(false)
+  isActive   Boolean @default(true)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([category])
   @@index([slug])

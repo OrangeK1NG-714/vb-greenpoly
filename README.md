@@ -24,7 +24,7 @@ Next.js 16 全栈应用：公开站（多语言）+ 管理后台 + 自定义埋�
 - 登录：邮箱密码 + JWT cookie
 - **Dashboard**：KPI 卡片 + Top 页面 + Top 国家 + 询盘状态分布
 - **Inquiries**：列表 + 状态筛选（NEW/CONTACTED/QUOTED/NEGOTIATING/WON/LOST）+ 内联状态切换 + 详情页（**含完整 session 行为轨迹**）+ 销售内部备注
-- **Sales desk**：真实询盘待办队列 + FOB/CIF 报价测算 + 英/法/葡人工跟进草稿；不自动发邮件，不依赖 mock 外部服务
+- **Sales desk**：真实询盘待办队列 + 版本化报价护栏与 FOB/CIF 明细 + 样品确认卡 + 英/法/葡人工跟进草稿；报价、客户确认和工厂交接文本都只能复制，绝不自动发送。报价缺失项、人工发送后的跟进时点，以及超出目标确认日的样品版本会进入操作待办。
 - **Analytics**：转化漏斗 · 产品页热度 · Top CTA · 滚动深度分布 · 平均停留时长
 - **Traffic**：地理来源 · UTM · referrer · 语言分布
 

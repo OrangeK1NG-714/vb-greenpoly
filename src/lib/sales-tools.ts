@@ -41,6 +41,113 @@ export type QuoteResult = {
   expectedGrossProfitUsd: number;
 };
 
+export const QUOTE_STATUSES = ["DRAFT", "READY_TO_REVIEW", "SENT_MANUALLY", "ARCHIVED"] as const;
+export type QuoteStatus = (typeof QUOTE_STATUSES)[number];
+
+export const SAMPLE_STATUSES = [
+  "NEEDS_INFORMATION",
+  "READY_FOR_CUSTOMER_CONFIRMATION",
+  "AWAITING_CONFIRMATION",
+  "CUSTOMER_CONFIRMED",
+  "HANDED_TO_FACTORY",
+  "CANCELLED",
+] as const;
+export type SampleStatus = (typeof SAMPLE_STATUSES)[number];
+
+export type QuoteDraftData = {
+  id?: string;
+  inquiryId: string;
+  status: QuoteStatus;
+  product: string;
+  grade: string;
+  quantityMt: number | null;
+  quantityUnit: string;
+  currency: string;
+  incoterm: string;
+  originPort: string;
+  destinationPort: string;
+  supplierCostCnyPerMt: number | null;
+  inlandAndPortCny: number | null;
+  documentsCny: number | null;
+  exchangeRateCnyPerUsd: number | null;
+  targetMarginPercent: number | null;
+  oceanFreightUsd: number | null;
+  insurancePercent: number | null;
+  paymentTerms: string;
+  packaging: string;
+  leadTime: string;
+  validUntil: string | null;
+  followUpAt: string | null;
+  sentAt: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type QuoteFieldName = Exclude<keyof QuoteDraftData, "id" | "inquiryId" | "status" | "sentAt" | "createdAt" | "updatedAt">;
+
+export type QuoteValidation = {
+  missingFields: QuoteFieldName[];
+  invalidFields: QuoteFieldName[];
+  canCalculateFob: boolean;
+  canCalculateCif: boolean;
+  canMarkReady: boolean;
+};
+
+export type TradeQuoteResult = QuoteResult & {
+  incoterm: "FOB" | "CIF";
+  quotedTotalUsd: number;
+  quotedPerMtUsd: number;
+};
+
+export type SampleSnapshot = {
+  id?: string;
+  inquiryId: string;
+  version: number;
+  status: SampleStatus;
+  product: string;
+  grade: string;
+  application: string;
+  appearance: string;
+  technicalRequirements: string;
+  quantity: number | null;
+  quantityUnit: string;
+  packaging: string;
+  acceptanceCriteria: string;
+  targetConfirmationDate: string | null;
+  customerConfirmedAt: string | null;
+  handedToFactoryAt: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export const SAMPLE_CRITICAL_FIELDS = [
+  "product",
+  "grade",
+  "application",
+  "appearance",
+  "technicalRequirements",
+  "quantity",
+  "quantityUnit",
+  "packaging",
+  "acceptanceCriteria",
+] as const;
+
+export type SampleCriticalField = (typeof SAMPLE_CRITICAL_FIELDS)[number];
+export type SampleFieldName = SampleCriticalField | "targetConfirmationDate";
+
+export type SampleValidation = {
+  missingFields: SampleFieldName[];
+  invalidFields: SampleFieldName[];
+};
+
+export type TradeTodo = {
+  kind: "QUOTE_MISSING_FIELDS" | "QUOTE_REVIEW" | "QUOTE_FOLLOW_UP_MISSING" | "QUOTE_FOLLOW_UP_DUE" | "SAMPLE_MISSING_FIELDS" | "SAMPLE_CONFIRMATION" | "SAMPLE_CONFIRMATION_OVERDUE" | "SAMPLE_FACTORY_HANDOFF";
+  inquiryId: string;
+  priority: "high" | "medium";
+  title: string;
+  detail: string;
+};
+
 export type LeadAction = {
   label: string;
   detail: string;
@@ -92,6 +199,400 @@ export function calculateQuote(input: QuoteInput): QuoteResult {
     cifPerMtUsd: cifTotalUsd / input.quantityMt,
     expectedGrossProfitUsd: fobTotalUsd - costBaseUsd,
   };
+}
+
+const QUOTE_REQUIRED_TEXT_FIELDS = [
+  "product",
+  "grade",
+  "quantityUnit",
+  "currency",
+  "incoterm",
+  "originPort",
+  "paymentTerms",
+  "packaging",
+  "leadTime",
+] as const satisfies readonly QuoteFieldName[];
+
+const QUOTE_REQUIRED_NUMBER_FIELDS = [
+  "quantityMt",
+  "supplierCostCnyPerMt",
+  "inlandAndPortCny",
+  "documentsCny",
+  "exchangeRateCnyPerUsd",
+  "targetMarginPercent",
+] as const satisfies readonly QuoteFieldName[];
+
+const QUOTE_FIELD_LABELS: Partial<Record<QuoteFieldName, string>> = {
+  product: "Product",
+  grade: "Grade",
+  quantityMt: "Quantity",
+  quantityUnit: "Quantity unit",
+  currency: "Currency",
+  incoterm: "Trade term",
+  originPort: "Origin port",
+  destinationPort: "Destination port",
+  supplierCostCnyPerMt: "Supplier cost",
+  inlandAndPortCny: "Inland and port cost",
+  documentsCny: "Document fees",
+  exchangeRateCnyPerUsd: "Exchange rate",
+  targetMarginPercent: "Target margin",
+  oceanFreightUsd: "Ocean freight",
+  insurancePercent: "Insurance",
+  paymentTerms: "Payment terms",
+  packaging: "Packaging",
+  leadTime: "Lead time",
+  validUntil: "Quote validity",
+  followUpAt: "Follow-up time",
+};
+
+function isBlank(value: string | null | undefined): boolean {
+  return !value || value.trim().length === 0;
+}
+
+function isMissingNumber(value: number | null | undefined): boolean {
+  return value === null || value === undefined;
+}
+
+function pushOnce<T>(items: T[], value: T) {
+  if (!items.includes(value)) items.push(value);
+}
+
+export function validateQuoteDraft(input: QuoteDraftData): QuoteValidation {
+  const missingFields: QuoteFieldName[] = [];
+  const invalidFields: QuoteFieldName[] = [];
+
+  for (const field of QUOTE_REQUIRED_TEXT_FIELDS) {
+    if (isBlank(input[field] as string)) missingFields.push(field);
+  }
+  for (const field of QUOTE_REQUIRED_NUMBER_FIELDS) {
+    if (isMissingNumber(input[field] as number | null)) missingFields.push(field);
+  }
+  if (isBlank(input.validUntil)) missingFields.push("validUntil");
+
+  const isCif = input.incoterm === "CIF";
+  if (isCif) {
+    if (isBlank(input.destinationPort)) missingFields.push("destinationPort");
+    if (isMissingNumber(input.oceanFreightUsd)) missingFields.push("oceanFreightUsd");
+    if (isMissingNumber(input.insurancePercent)) missingFields.push("insurancePercent");
+  }
+
+  const quantityMt = input.quantityMt;
+  if (quantityMt !== null && quantityMt !== undefined && (!Number.isFinite(quantityMt) || quantityMt <= 0)) {
+    invalidFields.push("quantityMt");
+  }
+  const supplierCostCnyPerMt = input.supplierCostCnyPerMt;
+  if (supplierCostCnyPerMt !== null && supplierCostCnyPerMt !== undefined && (!Number.isFinite(supplierCostCnyPerMt) || supplierCostCnyPerMt <= 0)) {
+    invalidFields.push("supplierCostCnyPerMt");
+  }
+  for (const field of ["inlandAndPortCny", "documentsCny"] as const) {
+    const value = input[field];
+    if (value !== null && value !== undefined && (!Number.isFinite(value) || value < 0)) invalidFields.push(field);
+  }
+  const exchangeRate = input.exchangeRateCnyPerUsd;
+  if (exchangeRate !== null && exchangeRate !== undefined && (!Number.isFinite(exchangeRate) || exchangeRate <= 0)) {
+    invalidFields.push("exchangeRateCnyPerUsd");
+  }
+  const margin = input.targetMarginPercent;
+  if (margin !== null && margin !== undefined && (!Number.isFinite(margin) || margin < 0 || margin >= 100)) {
+    invalidFields.push("targetMarginPercent");
+  }
+  const freight = input.oceanFreightUsd;
+  if (freight !== null && freight !== undefined && (!Number.isFinite(freight) || freight < 0)) {
+    invalidFields.push("oceanFreightUsd");
+  }
+  const insurance = input.insurancePercent;
+  if (insurance !== null && insurance !== undefined && (!Number.isFinite(insurance) || insurance < 0)) {
+    invalidFields.push("insurancePercent");
+  }
+  if (!isBlank(input.validUntil) && !Number.isFinite(new Date(input.validUntil as string).getTime())) {
+    invalidFields.push("validUntil");
+  }
+  if (!isBlank(input.followUpAt) && !Number.isFinite(new Date(input.followUpAt as string).getTime())) {
+    invalidFields.push("followUpAt");
+  }
+  if (!isBlank(input.currency) && input.currency !== "USD") pushOnce(invalidFields, "currency");
+  if (!isBlank(input.incoterm) && input.incoterm !== "FOB" && input.incoterm !== "CIF") pushOnce(invalidFields, "incoterm");
+
+  const baseCalculationFields: QuoteFieldName[] = [
+    "quantityMt",
+    "supplierCostCnyPerMt",
+    "inlandAndPortCny",
+    "documentsCny",
+    "exchangeRateCnyPerUsd",
+    "targetMarginPercent",
+  ];
+  const baseCalculationReady = input.currency === "USD"
+    && baseCalculationFields.every((field) => !missingFields.includes(field) && !invalidFields.includes(field));
+  const cifCalculationFields: QuoteFieldName[] = ["destinationPort", "oceanFreightUsd", "insurancePercent"];
+
+  return {
+    missingFields,
+    invalidFields,
+    canCalculateFob: baseCalculationReady,
+    canCalculateCif: isCif && baseCalculationReady && cifCalculationFields.every((field) => !missingFields.includes(field) && !invalidFields.includes(field)),
+    canMarkReady: missingFields.length === 0 && invalidFields.length === 0,
+  };
+}
+
+export function calculateTradeQuote(input: QuoteDraftData): TradeQuoteResult {
+  const validation = validateQuoteDraft(input);
+  const canCalculate = input.incoterm === "FOB" ? validation.canCalculateFob : validation.canCalculateCif;
+  if (!canCalculate) {
+    const fields = [...validation.missingFields, ...validation.invalidFields];
+    throw new Error(`Quote cannot be calculated: ${fields.join(", ") || "unsupported incoterm"}`);
+  }
+
+  const incoterm = input.incoterm as "FOB" | "CIF";
+  const result = calculateQuote({
+    quantityMt: input.quantityMt as number,
+    supplierCostCnyPerMt: input.supplierCostCnyPerMt as number,
+    inlandAndPortCny: input.inlandAndPortCny as number,
+    documentsCny: input.documentsCny as number,
+    exchangeRateCnyPerUsd: input.exchangeRateCnyPerUsd as number,
+    targetMarginPercent: input.targetMarginPercent as number,
+    oceanFreightUsd: incoterm === "CIF" ? input.oceanFreightUsd as number : 0,
+    insurancePercent: incoterm === "CIF" ? input.insurancePercent as number : 0,
+  });
+
+  return {
+    ...result,
+    incoterm,
+    quotedTotalUsd: incoterm === "CIF" ? result.cifTotalUsd : result.fobTotalUsd,
+    quotedPerMtUsd: incoterm === "CIF" ? result.cifPerMtUsd : result.fobPerMtUsd,
+  };
+}
+
+const QUOTE_TRANSITIONS: Record<QuoteStatus, readonly QuoteStatus[]> = {
+  DRAFT: ["READY_TO_REVIEW", "ARCHIVED"],
+  READY_TO_REVIEW: ["DRAFT", "SENT_MANUALLY", "ARCHIVED"],
+  SENT_MANUALLY: ["ARCHIVED"],
+  ARCHIVED: [],
+};
+
+export function canTransitionQuoteStatus(current: QuoteStatus, next: QuoteStatus): boolean {
+  return current === next || QUOTE_TRANSITIONS[current].includes(next);
+}
+
+function formatUsd(value: number): string {
+  return new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
+}
+
+export function createQuoteCustomerDraft(input: QuoteDraftData, result: TradeQuoteResult): string {
+  const validation = validateQuoteDraft(input);
+  if (!validation.canMarkReady) {
+    throw new Error(`Quote is not ready: ${[...validation.missingFields, ...validation.invalidFields].join(", ")}`);
+  }
+  const destination = input.incoterm === "CIF" ? ` ${input.destinationPort}` : ` ${input.originPort}`;
+  return [
+    "Quotation draft",
+    `Product / grade: ${input.product} / ${input.grade}`,
+    `Quantity: ${input.quantityMt} ${input.quantityUnit}`,
+    `Unit price: USD ${formatUsd(result.quotedPerMtUsd)}/${input.quantityUnit}`,
+    `Total: USD ${formatUsd(result.quotedTotalUsd)}`,
+    `Term: ${input.incoterm}${destination} (origin: ${input.originPort})`,
+    `Payment: ${input.paymentTerms}`,
+    `Packaging: ${input.packaging}`,
+    `Lead time: ${input.leadTime}`,
+    `Valid until: ${input.validUntil}`,
+    "All commercial and technical terms remain subject to human review and customer confirmation.",
+  ].join("\n");
+}
+
+const SAMPLE_REQUIRED_TEXT_FIELDS = [
+  "product",
+  "grade",
+  "application",
+  "appearance",
+  "technicalRequirements",
+  "quantityUnit",
+  "packaging",
+  "acceptanceCriteria",
+] as const satisfies readonly SampleFieldName[];
+
+export function validateSampleSnapshot(input: SampleSnapshot): SampleValidation {
+  const missingFields: SampleFieldName[] = [];
+  const invalidFields: SampleFieldName[] = [];
+
+  for (const field of SAMPLE_REQUIRED_TEXT_FIELDS) {
+    if (isBlank(input[field] as string)) missingFields.push(field);
+  }
+  const quantity = input.quantity;
+  if (quantity === null || quantity === undefined) {
+    missingFields.push("quantity");
+  } else if (!Number.isFinite(quantity) || quantity <= 0) {
+    invalidFields.push("quantity");
+  }
+  if (isBlank(input.targetConfirmationDate)) {
+    missingFields.push("targetConfirmationDate");
+  } else if (!Number.isFinite(new Date(input.targetConfirmationDate as string).getTime())) {
+    invalidFields.push("targetConfirmationDate");
+  }
+
+  return { missingFields, invalidFields };
+}
+
+const SAMPLE_TRANSITIONS: Record<SampleStatus, readonly SampleStatus[]> = {
+  NEEDS_INFORMATION: ["READY_FOR_CUSTOMER_CONFIRMATION", "CANCELLED"],
+  READY_FOR_CUSTOMER_CONFIRMATION: ["NEEDS_INFORMATION", "AWAITING_CONFIRMATION", "CANCELLED"],
+  AWAITING_CONFIRMATION: ["NEEDS_INFORMATION", "READY_FOR_CUSTOMER_CONFIRMATION", "CUSTOMER_CONFIRMED", "CANCELLED"],
+  CUSTOMER_CONFIRMED: ["HANDED_TO_FACTORY", "CANCELLED"],
+  HANDED_TO_FACTORY: ["CANCELLED"],
+  CANCELLED: [],
+};
+
+export function canTransitionSampleStatus(current: SampleStatus, next: SampleStatus): boolean {
+  return current === next || SAMPLE_TRANSITIONS[current].includes(next);
+}
+
+function comparableSampleValue(value: string | number | null): string | number | null {
+  return typeof value === "string" ? value.trim() : value;
+}
+
+export function compareSampleVersions(previous: SampleSnapshot, next: SampleSnapshot): { changedFields: SampleCriticalField[]; requiresNewVersion: boolean } {
+  const changedFields = SAMPLE_CRITICAL_FIELDS.filter((field) => (
+    comparableSampleValue(previous[field]) !== comparableSampleValue(next[field])
+  ));
+  return {
+    changedFields,
+    requiresNewVersion: changedFields.length > 0 && (previous.status === "CUSTOMER_CONFIRMED" || previous.status === "HANDED_TO_FACTORY"),
+  };
+}
+
+export function sampleStatusForContents(input: SampleSnapshot): "NEEDS_INFORMATION" | "READY_FOR_CUSTOMER_CONFIRMATION" {
+  const validation = validateSampleSnapshot(input);
+  return validation.missingFields.length === 0 && validation.invalidFields.length === 0
+    ? "READY_FOR_CUSTOMER_CONFIRMATION"
+    : "NEEDS_INFORMATION";
+}
+
+export function createSampleCustomerConfirmation(input: SampleSnapshot): string {
+  const validation = validateSampleSnapshot(input);
+  if (validation.missingFields.length > 0 || validation.invalidFields.length > 0) {
+    throw new Error(`Sample confirmation is incomplete: ${[...validation.missingFields, ...validation.invalidFields].join(", ")}`);
+  }
+  return [
+    `Sample confirmation — Version ${input.version}`,
+    `Product / grade: ${input.product} / ${input.grade}`,
+    `Application: ${input.application}`,
+    `Colour / appearance: ${input.appearance}`,
+    `Technical requirements: ${input.technicalRequirements}`,
+    `Sample quantity: ${input.quantity} ${input.quantityUnit}`,
+    `Packaging: ${input.packaging}`,
+    `Acceptance focus: ${input.acceptanceCriteria}`,
+    "Please confirm that this version matches your sample requirements. Any later change will create a new version for confirmation.",
+  ].join("\n");
+}
+
+export function createFactoryHandoffSummary(input: SampleSnapshot): string {
+  if (input.status !== "CUSTOMER_CONFIRMED" && input.status !== "HANDED_TO_FACTORY") {
+    throw new Error("Factory handoff requires a customer-confirmed sample version");
+  }
+  return [
+    `CUSTOMER CONFIRMED — SAMPLE VERSION ${input.version}`,
+    `Product / grade: ${input.product} / ${input.grade}`,
+    `Application: ${input.application}`,
+    `Colour / appearance: ${input.appearance}`,
+    `Technical requirements: ${input.technicalRequirements}`,
+    `Prepare: ${input.quantity} ${input.quantityUnit}`,
+    `Packaging: ${input.packaging}`,
+    `Customer acceptance focus: ${input.acceptanceCriteria}`,
+  ].join("\n");
+}
+
+function quoteFieldLabels(fields: QuoteFieldName[]): string {
+  return fields.map((field) => QUOTE_FIELD_LABELS[field] ?? field).join(", ");
+}
+
+function isDue(value: string | null, asOf: string): boolean {
+  if (!value) return false;
+  const target = new Date(value).getTime();
+  const now = new Date(asOf).getTime();
+  return Number.isFinite(target) && Number.isFinite(now) && target < now;
+}
+
+export function getTradeTodos(input: { quotes: QuoteDraftData[]; samples: SampleSnapshot[]; asOf: string }): TradeTodo[] {
+  const todos: TradeTodo[] = [];
+
+  for (const quote of input.quotes) {
+    if (quote.status === "DRAFT") {
+      const validation = validateQuoteDraft(quote);
+      const fields = [...validation.missingFields, ...validation.invalidFields];
+      if (fields.length > 0) {
+        todos.push({
+          kind: "QUOTE_MISSING_FIELDS",
+          inquiryId: quote.inquiryId,
+          priority: "high",
+          title: "Complete quote conditions",
+          detail: quoteFieldLabels(fields),
+        });
+      }
+    } else if (quote.status === "READY_TO_REVIEW") {
+      todos.push({
+        kind: "QUOTE_REVIEW",
+        inquiryId: quote.inquiryId,
+        priority: "medium",
+        title: "Review quote before manual sending",
+        detail: `${quote.product || "Quote"} is ready for human review`,
+      });
+    } else if (quote.status === "SENT_MANUALLY") {
+      if (!quote.followUpAt) {
+        todos.push({
+          kind: "QUOTE_FOLLOW_UP_MISSING",
+          inquiryId: quote.inquiryId,
+          priority: "medium",
+          title: "Set quote follow-up time",
+          detail: "The quote was marked as manually sent without a follow-up time",
+        });
+      } else if (isDue(quote.followUpAt, input.asOf)) {
+        todos.push({
+          kind: "QUOTE_FOLLOW_UP_DUE",
+          inquiryId: quote.inquiryId,
+          priority: "high",
+          title: "Quote follow-up due",
+          detail: `Human follow-up was due ${quote.followUpAt}`,
+        });
+      }
+    }
+  }
+
+  for (const sample of input.samples) {
+    if (sample.status === "NEEDS_INFORMATION") {
+      const validation = validateSampleSnapshot(sample);
+      todos.push({
+        kind: "SAMPLE_MISSING_FIELDS",
+        inquiryId: sample.inquiryId,
+        priority: "high",
+        title: `Complete sample version ${sample.version}`,
+        detail: [...validation.missingFields, ...validation.invalidFields].join(", "),
+      });
+    } else if (sample.status === "READY_FOR_CUSTOMER_CONFIRMATION") {
+      todos.push({
+        kind: "SAMPLE_CONFIRMATION",
+        inquiryId: sample.inquiryId,
+        priority: "medium",
+        title: `Review sample version ${sample.version}`,
+        detail: "Copy the customer confirmation text after human review",
+      });
+    } else if (sample.status === "AWAITING_CONFIRMATION" && isDue(sample.targetConfirmationDate, input.asOf)) {
+      todos.push({
+        kind: "SAMPLE_CONFIRMATION_OVERDUE",
+        inquiryId: sample.inquiryId,
+        priority: "high",
+        title: `Sample version ${sample.version} is overdue`,
+        detail: `Customer confirmation target was ${sample.targetConfirmationDate}`,
+      });
+    } else if (sample.status === "CUSTOMER_CONFIRMED") {
+      todos.push({
+        kind: "SAMPLE_FACTORY_HANDOFF",
+        inquiryId: sample.inquiryId,
+        priority: "medium",
+        title: `Hand sample version ${sample.version} to factory`,
+        detail: "Use the customer-confirmed version for the internal handoff",
+      });
+    }
+  }
+
+  return todos;
 }
 
 function wholeDaysBetween(earlier: string, later: string): number {

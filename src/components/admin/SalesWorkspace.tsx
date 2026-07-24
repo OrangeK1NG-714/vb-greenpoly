@@ -3,43 +3,38 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import {
-  calculateQuote,
   createFollowUpDraft,
   getLeadAction,
+  getTradeTodos,
   SALES_STATUSES,
   type DraftLanguage,
   type DraftTone,
-  type QuoteInput,
+  type QuoteDraftData,
   type SalesLead,
+  type SampleSnapshot,
 } from "@/lib/sales-tools";
+import {
+  QuoteWorkbench,
+  SampleWorkbench,
+  TradeTodoPanel,
+  type TradeProductOption,
+} from "@/components/admin/TradeWorkflowWorkspace";
 
-type WorkspaceTab = "pipeline" | "quote" | "outreach";
+type WorkspaceTab = "pipeline" | "quote" | "sample" | "outreach";
 
-type ProductOption = {
-  value: string;
-  label: string;
-};
+type ProductOption = TradeProductOption;
 
 type Props = {
   leads: SalesLead[];
   products: ProductOption[];
   asOf: string;
   source: "local" | "go-backend";
+  initialQuotes: QuoteDraftData[];
+  initialSamples: SampleSnapshot[];
 };
 
 const PRIORITY_ORDER = { high: 0, medium: 1, low: 2, done: 3 } as const;
 const ACTIVE_STATUSES = new Set(["NEW", "CONTACTED", "QUOTED", "NEGOTIATING"]);
-
-const INITIAL_QUOTE: QuoteInput = {
-  quantityMt: 20,
-  supplierCostCnyPerMt: 5600,
-  inlandAndPortCny: 6500,
-  documentsCny: 2500,
-  exchangeRateCnyPerUsd: 7.2,
-  targetMarginPercent: 12,
-  oceanFreightUsd: 1200,
-  insurancePercent: 0.3,
-};
 
 function blankLead(): SalesLead {
   const now = new Date(0).toISOString();
@@ -59,8 +54,10 @@ function blankLead(): SalesLead {
   };
 }
 
-export default function SalesWorkspace({ leads, products, asOf, source }: Props) {
+export default function SalesWorkspace({ leads, products, asOf, source, initialQuotes, initialSamples }: Props) {
   const [tab, setTab] = useState<WorkspaceTab>("pipeline");
+  const [quotes, setQuotes] = useState(initialQuotes);
+  const [samples, setSamples] = useState(initialSamples);
 
   const counts = useMemo(() => {
     const next = Object.fromEntries(SALES_STATUSES.map((status) => [status, 0])) as Record<string, number>;
@@ -82,6 +79,7 @@ export default function SalesWorkspace({ leads, products, asOf, source }: Props)
   const highPriorityCount = actionQueue.filter(({ action }) => action.priority === "high").length;
   const wonCount = counts.WON ?? 0;
   const winRate = leads.length > 0 ? Math.round((wonCount / leads.length) * 100) : 0;
+  const tradeTodos = useMemo(() => getTradeTodos({ quotes, samples, asOf }), [asOf, quotes, samples]);
 
   return (
     <div className="space-y-6">
@@ -97,7 +95,8 @@ export default function SalesWorkspace({ leads, products, asOf, source }: Props)
 
         <div className="inline-flex w-full rounded-lg border border-slate-200 bg-white p-1 shadow-sm xl:w-auto" role="tablist" aria-label="Sales workspace views">
           <TabButton active={tab === "pipeline"} onClick={() => setTab("pipeline")}>Pipeline</TabButton>
-          <TabButton active={tab === "quote"} onClick={() => setTab("quote")}>Quote builder</TabButton>
+          <TabButton active={tab === "quote"} onClick={() => setTab("quote")}>Quote guardrail</TabButton>
+          <TabButton active={tab === "sample"} onClick={() => setTab("sample")}>Sample cards</TabButton>
           <TabButton active={tab === "outreach"} onClick={() => setTab("outreach")}>Follow-up drafts</TabButton>
         </div>
       </header>
@@ -110,9 +109,13 @@ export default function SalesWorkspace({ leads, products, asOf, source }: Props)
       </div>
 
       {tab === "pipeline" && (
-        <PipelineView leads={leads} counts={counts} actionQueue={actionQueue} source={source} />
+        <div className="space-y-6">
+          <TradeTodoPanel todos={tradeTodos} leads={leads} />
+          <PipelineView leads={leads} counts={counts} actionQueue={actionQueue} source={source} />
+        </div>
       )}
-      {tab === "quote" && <QuoteBuilder products={products} />}
+      {tab === "quote" && <QuoteWorkbench leads={leads} products={products} quotes={quotes} onQuotesChange={setQuotes} />}
+      {tab === "sample" && <SampleWorkbench leads={leads} products={products} samples={samples} onSamplesChange={setSamples} />}
       {tab === "outreach" && <OutreachBuilder leads={leads} products={products} />}
     </div>
   );
@@ -221,98 +224,6 @@ function PipelineView({
         </div>
       </section>
     </div>
-  );
-}
-
-function QuoteBuilder({ products }: { products: ProductOption[] }) {
-  const [product, setProduct] = useState(products[0]?.value ?? "Recycled plastic pellets");
-  const [input, setInput] = useState(INITIAL_QUOTE);
-  const [copied, setCopied] = useState(false);
-
-  const quote = useMemo(() => {
-    try {
-      return calculateQuote(input);
-    } catch {
-      return null;
-    }
-  }, [input]);
-
-  function update<K extends keyof QuoteInput>(key: K, value: string) {
-    setInput((current) => ({ ...current, [key]: Number(value) }));
-  }
-
-  const summary = quote
-    ? [
-        `${product} quotation draft`,
-        `Quantity: ${input.quantityMt} MT`,
-        `FOB: ${usd(quote.fobPerMtUsd)}/MT (${usd(quote.fobTotalUsd)} total)`,
-        `Ocean freight: ${usd(quote.oceanFreightUsd)}`,
-        `Insurance: ${usd(quote.insuranceUsd)}`,
-        `CIF: ${usd(quote.cifPerMtUsd)}/MT (${usd(quote.cifTotalUsd)} total)`,
-        `Gross margin target: ${input.targetMarginPercent}%`,
-      ].join("\n")
-    : "";
-
-  async function copySummary() {
-    if (!summary) return;
-    try {
-      await navigator.clipboard.writeText(summary);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1600);
-    } catch {
-      setCopied(false);
-    }
-  }
-
-  return (
-    <section className="grid overflow-hidden rounded-lg border border-slate-200 bg-white xl:grid-cols-[minmax(0,1fr)_22rem]">
-      <div className="p-5 sm:p-6">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h2 className="font-bold text-slate-950">FOB / CIF quote builder</h2>
-            <p className="mt-1 text-xs text-slate-500">Internal calculation · values are not sent or stored</p>
-          </div>
-          <span className="rounded bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-700">MANUAL FX</span>
-        </div>
-
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <SelectField label="Product" value={product} onChange={setProduct} options={products} />
-          <NumberField label="Quantity" suffix="MT" value={input.quantityMt} onChange={(value) => update("quantityMt", value)} min="0.01" step="0.01" />
-          <NumberField label="Supplier cost" suffix="CNY/MT" value={input.supplierCostCnyPerMt} onChange={(value) => update("supplierCostCnyPerMt", value)} min="0" step="1" />
-          <NumberField label="Inland + port" suffix="CNY" value={input.inlandAndPortCny} onChange={(value) => update("inlandAndPortCny", value)} min="0" step="1" />
-          <NumberField label="Documents" suffix="CNY" value={input.documentsCny} onChange={(value) => update("documentsCny", value)} min="0" step="1" />
-          <NumberField label="CNY per USD" suffix="FX" value={input.exchangeRateCnyPerUsd} onChange={(value) => update("exchangeRateCnyPerUsd", value)} min="0.01" step="0.01" />
-          <NumberField label="Gross margin" suffix="%" value={input.targetMarginPercent} onChange={(value) => update("targetMarginPercent", value)} min="0" max="99" step="0.1" />
-          <NumberField label="Ocean freight" suffix="USD" value={input.oceanFreightUsd} onChange={(value) => update("oceanFreightUsd", value)} min="0" step="1" />
-          <NumberField label="Insurance" suffix="%" value={input.insurancePercent} onChange={(value) => update("insurancePercent", value)} min="0" step="0.1" />
-        </div>
-      </div>
-
-      <div className="flex min-h-[26rem] flex-col bg-slate-950 p-6 text-white">
-        <div className="text-xs font-semibold uppercase text-emerald-400">Draft result</div>
-        {quote ? (
-          <>
-            <div className="mt-5 border-b border-slate-800 pb-5">
-              <div className="text-xs text-slate-400">CIF unit price</div>
-              <div className="mt-1 text-3xl font-bold">{usd(quote.cifPerMtUsd)}</div>
-              <div className="mt-1 text-xs text-slate-400">per metric ton</div>
-            </div>
-            <dl className="mt-5 space-y-3 text-sm">
-              <ResultRow label="Cost base" value={usd(quote.costBaseUsd)} />
-              <ResultRow label="FOB total" value={usd(quote.fobTotalUsd)} />
-              <ResultRow label="Freight + insurance" value={usd(quote.oceanFreightUsd + quote.insuranceUsd)} />
-              <ResultRow label="CIF total" value={usd(quote.cifTotalUsd)} strong />
-              <ResultRow label="Gross profit" value={usd(quote.expectedGrossProfitUsd)} accent />
-            </dl>
-            <button type="button" onClick={copySummary} className="mt-auto min-h-10 rounded-md bg-emerald-500 px-4 text-sm font-bold text-slate-950 transition hover:bg-emerald-400">
-              {copied ? "Copied" : "Copy quote summary"}
-            </button>
-          </>
-        ) : (
-          <div className="mt-8 rounded-md border border-rose-900 bg-rose-950/50 p-4 text-sm text-rose-200">Check quantity, exchange rate, margin, and cost values.</div>
-        )}
-      </div>
-    </section>
   );
 }
 
@@ -438,18 +349,6 @@ function OutreachBuilder({ leads, products }: { leads: SalesLead[]; products: Pr
 
 const inputClassName = "mt-1.5 min-h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100";
 
-function NumberField({ label, suffix, value, onChange, min, max, step }: { label: string; suffix: string; value: number; onChange: (value: string) => void; min?: string; max?: string; step?: string }) {
-  return (
-    <label className="block">
-      <span className="text-xs font-semibold text-slate-600">{label}</span>
-      <div className="relative mt-1.5">
-        <input type="number" value={value} min={min} max={max} step={step} onChange={(event) => onChange(event.target.value)} className="min-h-10 w-full rounded-md border border-slate-300 bg-white px-3 pr-16 text-sm text-slate-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100" />
-        <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-[10px] font-bold text-slate-400">{suffix}</span>
-      </div>
-    </label>
-  );
-}
-
 function TextField({ label, type = "text", value, onChange }: { label: string; type?: string; value: string; onChange: (value: string) => void }) {
   return (
     <label className="block">
@@ -469,15 +368,6 @@ function SelectField({ label, value, onChange, options, includeCurrent = false }
         {options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
       </select>
     </label>
-  );
-}
-
-function ResultRow({ label, value, strong = false, accent = false }: { label: string; value: string; strong?: boolean; accent?: boolean }) {
-  return (
-    <div className="flex items-center justify-between gap-4">
-      <dt className="text-slate-400">{label}</dt>
-      <dd className={`${strong ? "font-bold text-white" : "font-semibold"} ${accent ? "text-emerald-400" : "text-slate-200"}`}>{value}</dd>
-    </div>
   );
 }
 
@@ -510,12 +400,4 @@ function statusBar(status: string) {
     LOST: "bg-slate-400",
   };
   return colors[status] ?? colors.LOST;
-}
-
-function usd(value: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 2,
-  }).format(value);
 }
