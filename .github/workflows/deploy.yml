@@ -51,12 +51,14 @@ jobs:
       uses: appleboy/ssh-action@v1.0.3
       env:
         GREENPOLY_INTERNAL_STATS_TOKEN: ${{ secrets.GREENPOLY_INTERNAL_STATS_TOKEN }}
+        GREENPOLY_ADMIN_PASSWORD: ${{ secrets.GREENPOLY_ADMIN_PASSWORD }}
+        GREENPOLY_AUTH_SECRET: ${{ secrets.GREENPOLY_AUTH_SECRET }}
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22
-        envs: GREENPOLY_INTERNAL_STATS_TOKEN
+        envs: GREENPOLY_INTERNAL_STATS_TOKEN,GREENPOLY_ADMIN_PASSWORD,GREENPOLY_AUTH_SECRET
         # 服务器端构建(npm install+prisma+next build+canary)常超 10 分钟默认值,
         # 提到 30 分钟,避免被 ssh-action 中途杀掉留下不确定状态
         command_timeout: 30m
@@ -67,20 +69,32 @@ jobs:
           PREVIOUS_DIR="$(readlink -f /var/www/greenpoly-current 2>/dev/null || true)"
           if [ -z "$PREVIOUS_DIR" ]; then PREVIOUS_DIR="$SHARED_DIR"; fi
 
-          # 统计令牌仅从 GitHub Secret 注入，并原子更新共享生产 .env。
-          # 不打印令牌，也不允许缺失/弱令牌构建新 release。
-          test "${#GREENPOLY_INTERNAL_STATS_TOKEN}" -ge 32
+          # 统计令牌和 JWT 签名密钥仅从 GitHub Secret 注入，并原子更新共享生产 .env。
+          # 管理员密码只在本次进程环境中使用，绝不写进 .env 或日志。
           test -f "$SHARED_DIR/.env"
           ENV_FILE="$SHARED_DIR/.env" node <<'NODE'
           const fs = require("node:fs");
           const file = process.env.ENV_FILE;
           const token = process.env.GREENPOLY_INTERNAL_STATS_TOKEN;
-          if (!file || !token || Buffer.byteLength(token) < 32) throw new Error("invalid internal stats token");
+          const authSecret = process.env.GREENPOLY_AUTH_SECRET;
+          const adminPassword = process.env.GREENPOLY_ADMIN_PASSWORD;
+          const invalid = (value, minimum) => !value || Buffer.byteLength(value) < minimum || /[\r\n]/.test(value);
+          if (!file || invalid(token, 32) || invalid(authSecret, 32) || invalid(adminPassword, 20)) {
+            throw new Error("missing or weak GreenPoly production secret");
+          }
           const current = fs.readFileSync(file, "utf8");
-          const line = `GREENPOLY_INTERNAL_STATS_TOKEN=${token}`;
-          const next = /^GREENPOLY_INTERNAL_STATS_TOKEN=.*$/m.test(current)
-            ? current.replace(/^GREENPOLY_INTERNAL_STATS_TOKEN=.*$/m, line)
-            : `${current.replace(/\n?$/, "\n")}${line}\n`;
+          // The canary needs the metrics token. Keep the authentication key
+          // unchanged until it has passed, so a failed release cannot leave
+          // the running service with partially rotated authentication state.
+          const entries = [["GREENPOLY_INTERNAL_STATS_TOKEN", token]];
+          let next = current;
+          for (const [key, value] of entries) {
+            const pattern = new RegExp(`^${key}=.*$`, "m");
+            const line = `${key}=${value}`;
+            next = pattern.test(next)
+              ? next.replace(pattern, line)
+              : `${next.replace(/\n?$/, "\n")}${line}\n`;
+          }
           const temporary = `${file}.tmp-${process.pid}`;
           fs.writeFileSync(temporary, next, { mode: 0o600 });
           fs.renameSync(temporary, file);
@@ -88,6 +102,7 @@ jobs:
 
           cd "$RELEASE_DIR"
           ln -sfn "$SHARED_DIR/.env" .env
+          export DATABASE_URL="file:$SHARED_DIR/prod.db"
 
           # 完整安装依赖(Next 构建需要 devDependencies)
           # 主用国内镜像源;镜像还没同步的新版本(如 prisma 7.9.0)回退官方源
@@ -95,7 +110,6 @@ jobs:
             npm install --registry=https://registry.npmjs.org --no-audit --no-fund
 
           # 先生成 Prisma 客户端,再构建(顺序不能反)
-          export DATABASE_URL="file:$SHARED_DIR/prod.db"
           npx prisma generate
           npm run build
 
@@ -131,6 +145,25 @@ jobs:
             echo "Canary health check failed"
             exit 1
           fi
+
+          # Only commit the authentication rotation after the canary is healthy.
+          ENV_FILE="$SHARED_DIR/.env" node <<'NODE'
+          const fs = require("node:fs");
+          const file = process.env.ENV_FILE;
+          const authSecret = process.env.GREENPOLY_AUTH_SECRET;
+          if (!file || !authSecret || Buffer.byteLength(authSecret) < 32 || /[\r\n]/.test(authSecret)) {
+            throw new Error("missing or weak GreenPoly authentication secret");
+          }
+          const current = fs.readFileSync(file, "utf8");
+          const line = `AUTH_SECRET=${authSecret}`;
+          const next = /^AUTH_SECRET=.*$/m.test(current)
+            ? current.replace(/^AUTH_SECRET=.*$/m, line)
+            : `${current.replace(/\n?$/, "\n")}${line}\n`;
+          const temporary = `${file}.tmp-${process.pid}`;
+          fs.writeFileSync(temporary, next, { mode: 0o600 });
+          fs.renameSync(temporary, file);
+          NODE
+          npx tsx scripts/rotate-admin-password.ts
 
           # Canary 通过后再切换正式端口；失败则恢复上一个 release。
           pm2 delete greenpoly > /dev/null 2>&1 || true
