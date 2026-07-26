@@ -3,6 +3,8 @@ import { prisma } from "@/lib/db";
 import { goBackendEnabled, listInquiriesGo, type GoInquiry } from "@/lib/go-backend";
 import type { Inquiry } from "@/generated/prisma/client";
 import InquiryStatusSelect from "@/components/admin/InquiryStatusSelect";
+import PageHeader from "@/components/ui/PageHeader";
+import { STATUS_SOLID, statusClass } from "@/components/ui/status";
 import { format } from "date-fns";
 
 export const dynamic = "force-dynamic";
@@ -43,16 +45,13 @@ export default async function InquiriesPage({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <h1 className="text-2xl font-bold text-slate-900">Inquiries</h1>
-        <span className="text-sm text-slate-500">{inquiries.length} shown</span>
-      </div>
+      <PageHeader title="Inquiries" meta={`${inquiries.length} shown`} />
 
       {/* Status filter pills */}
       <div className="flex flex-wrap gap-2">
         <Link
           href="/admin/inquiries"
-          className={`px-3 py-1.5 text-sm rounded-full border ${!statusFilter ? "bg-slate-900 text-white border-slate-900" : "bg-white border-slate-200 text-slate-700"}`}
+          className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${!statusFilter ? "bg-slate-900 text-white border-slate-900" : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"}`}
         >
           All
         </Link>
@@ -60,7 +59,7 @@ export default async function InquiriesPage({
           <Link
             key={s}
             href={`/admin/inquiries?status=${s}`}
-            className={`px-3 py-1.5 text-sm rounded-full border ${statusFilter === s ? statusActiveColor(s) : "bg-white border-slate-200 text-slate-700"}`}
+            className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${statusFilter === s ? statusClass(STATUS_SOLID, s) : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"}`}
           >
             {s} ({totalByStatus[s] ?? 0})
           </Link>
@@ -68,29 +67,29 @@ export default async function InquiriesPage({
       </div>
 
       {inquiries.length === 0 ? (
-        <div className="bg-white border border-slate-200 rounded-xl p-12 text-center">
+        <div className="admin-card p-12 text-center">
           <div className="text-4xl mb-3">📭</div>
           <p className="text-slate-600">No inquiries yet. They will appear here once visitors submit the form.</p>
         </div>
       ) : (
-        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+        <div className="admin-card overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-slate-50 border-b border-slate-200">
+            <table className="admin-table">
+              <thead>
                 <tr>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700">Date</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700">Contact</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700">Product</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700">Volume</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700">Country</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700">Source</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700">Status</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700"></th>
+                  <th>Date</th>
+                  <th>Contact</th>
+                  <th>Product</th>
+                  <th>Volume</th>
+                  <th>Country</th>
+                  <th>Source</th>
+                  <th>Status</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {inquiries.map((inq) => (
-                  <tr key={inq.id} className="hover:bg-slate-50">
+                  <tr key={inq.id} className="transition-colors hover:bg-slate-50">
                     <td className="px-4 py-3 text-slate-500 whitespace-nowrap">
                       {format(inq.createdAt, "MMM d, HH:mm")}
                     </td>
@@ -120,16 +119,4 @@ export default async function InquiriesPage({
       )}
     </div>
   );
-}
-
-function statusActiveColor(s: string) {
-  const map: Record<string, string> = {
-    NEW: "bg-emerald-600 text-white border-emerald-600",
-    CONTACTED: "bg-blue-600 text-white border-blue-600",
-    QUOTED: "bg-purple-600 text-white border-purple-600",
-    NEGOTIATING: "bg-amber-600 text-white border-amber-600",
-    WON: "bg-green-600 text-white border-green-600",
-    LOST: "bg-slate-600 text-white border-slate-600",
-  };
-  return map[s] ?? map.NEW;
 }

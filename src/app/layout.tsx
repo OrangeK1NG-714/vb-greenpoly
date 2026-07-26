@@ -34,6 +34,8 @@ export const metadata: Metadata = {
   ],
   // OpenGraph drives the link-preview cards buyers see when a URL is pasted into
   // WhatsApp / Zalo / LINE / Facebook — the dominant sharing channels across SEA.
+  // og:image / twitter:image come from the file conventions opengraph-image.tsx
+  // and twitter-image.tsx, which take precedence over anything listed here.
   openGraph: {
     type: "website",
     siteName: CONTACT.brand,
@@ -41,21 +43,11 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     url: siteUrl,
     locale: "en_US",
-    images: [
-      {
-        // TODO: replace with a branded 1200×630 share image at /public/og.jpg
-        url: "/images/products/abs.jpg",
-        width: 800,
-        height: 600,
-        alt: `${CONTACT.brand} — recycled ABS · HIPS · PP · GPPS pellets`,
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE_DEFAULT,
     description: DESCRIPTION,
-    images: ["/images/products/abs.jpg"],
   },
   robots: { index: true, follow: true },
 };

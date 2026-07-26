@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/db";
 import { subDays } from "date-fns";
+import Panel from "@/components/ui/Panel";
+import PageHeader from "@/components/ui/PageHeader";
 
 export const dynamic = "force-dynamic";
 
@@ -51,10 +53,7 @@ export default async function TrafficPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">Traffic Sources</h1>
-        <span className="text-sm text-slate-500">Last 30 days</span>
-      </div>
+      <PageHeader title="Traffic Sources" meta="Last 30 days" />
 
       <div className="grid lg:grid-cols-2 gap-6">
         <Panel title="By country (edge location)">
@@ -88,15 +87,6 @@ export default async function TrafficPage() {
           )}
         </Panel>
       </div>
-    </div>
-  );
-}
-
-function Panel({ title, children, wide }: { title: string; children: React.ReactNode; wide?: boolean }) {
-  return (
-    <div className={`bg-white rounded-xl border border-slate-200 p-5 ${wide ? "lg:col-span-2" : ""}`}>
-      <h3 className="font-bold text-slate-900 mb-3">{title}</h3>
-      {children}
     </div>
   );
 }

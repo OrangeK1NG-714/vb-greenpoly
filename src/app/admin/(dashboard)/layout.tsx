@@ -33,7 +33,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <Link
               key={it.href}
               href={it.href}
-              className="flex flex-none items-center gap-2 whitespace-nowrap px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white text-sm transition lg:gap-3"
+              className="flex flex-none items-center gap-2 whitespace-nowrap px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white text-sm transition-colors lg:gap-3"
             >
               <span>{it.icon}</span>
               <span>{it.label}</span>
@@ -42,7 +42,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         </nav>
 
         <form action="/api/admin/logout" method="POST" className="hidden p-3 border-t border-slate-800 lg:block">
-          <button type="submit" className="w-full text-left px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white text-sm transition flex items-center gap-3">
+          <button type="submit" className="w-full text-left px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white text-sm transition-colors flex items-center gap-3">
             <span>🚪</span> Sign out
           </button>
         </form>

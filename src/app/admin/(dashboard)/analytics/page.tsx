@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/db";
 import { subDays } from "date-fns";
+import Panel from "@/components/ui/Panel";
+import PageHeader from "@/components/ui/PageHeader";
 
 export const dynamic = "force-dynamic";
 
@@ -91,13 +93,10 @@ export default async function AnalyticsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">Analytics</h1>
-        <span className="text-sm text-slate-500">Last 30 days</span>
-      </div>
+      <PageHeader title="Analytics" meta="Last 30 days" />
 
       {/* Funnel */}
-      <div className="bg-white rounded-xl border border-slate-200 p-6">
+      <div className="admin-card p-6">
         <h2 className="font-bold text-slate-900 mb-1">Conversion funnel</h2>
         <p className="text-xs text-slate-500 mb-6">Where visitors drop off on the path to inquiry</p>
 
@@ -216,16 +215,6 @@ export default async function AnalyticsPage() {
           </div>
         </Panel>
       </div>
-    </div>
-  );
-}
-
-function Panel({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
-  return (
-    <div className="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 className="font-bold text-slate-900">{title}</h3>
-      {subtitle && <p className="text-xs text-slate-500 mb-3">{subtitle}</p>}
-      <div className="mt-3">{children}</div>
     </div>
   );
 }

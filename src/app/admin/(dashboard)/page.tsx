@@ -2,6 +2,9 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { goBackendEnabled, inquiryStatsGo } from "@/lib/go-backend";
 import { subDays, startOfDay } from "date-fns";
+import Panel from "@/components/ui/Panel";
+import PageHeader from "@/components/ui/PageHeader";
+import { STATUS_BADGE, statusClass } from "@/components/ui/status";
 
 export const dynamic = "force-dynamic";
 
@@ -91,10 +94,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
-        <span className="text-sm text-slate-500">Last 7 days</span>
-      </div>
+      <PageHeader title="Dashboard" meta="Last 7 days" />
 
       {/* KPI cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -145,7 +145,7 @@ export default async function DashboardPage() {
             <ul className="space-y-3">
               {s.statusBreakdown.map((b) => (
                 <li key={b.status} className="flex items-center justify-between">
-                  <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded ${statusColor(b.status)}`}>{b.status}</span>
+                  <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded ${statusClass(STATUS_BADGE, b.status)}`}>{b.status}</span>
                   <span className="font-mono text-sm font-semibold">{b._count.status}</span>
                 </li>
               ))}
@@ -157,19 +157,19 @@ export default async function DashboardPage() {
         {/* Quick links */}
         <Panel title="Quick actions">
           <div className="grid grid-cols-2 gap-3">
-            <Link href="/admin/inquiries?status=NEW" className="border border-slate-200 rounded-lg p-4 hover:bg-slate-50 transition">
+            <Link href="/admin/inquiries?status=NEW" className="rounded-xl border border-slate-200 p-4 transition-colors hover:border-brand-200 hover:bg-brand-50/40">
               <div className="font-semibold text-sm">📬 New inquiries</div>
               <div className="text-xs text-slate-500 mt-1">{s.newInquiries} waiting</div>
             </Link>
-            <Link href="/admin/sales" className="border border-slate-200 rounded-lg p-4 hover:bg-slate-50 transition">
+            <Link href="/admin/sales" className="rounded-xl border border-slate-200 p-4 transition-colors hover:border-brand-200 hover:bg-brand-50/40">
               <div className="font-semibold text-sm">◆ Sales desk</div>
               <div className="text-xs text-slate-500 mt-1">Pipeline, quotes, follow-up</div>
             </Link>
-            <Link href="/admin/analytics" className="border border-slate-200 rounded-lg p-4 hover:bg-slate-50 transition">
+            <Link href="/admin/analytics" className="rounded-xl border border-slate-200 p-4 transition-colors hover:border-brand-200 hover:bg-brand-50/40">
               <div className="font-semibold text-sm">📈 Funnel analysis</div>
               <div className="text-xs text-slate-500 mt-1">Conversion paths</div>
             </Link>
-            <Link href="/admin/traffic" className="border border-slate-200 rounded-lg p-4 hover:bg-slate-50 transition">
+            <Link href="/admin/traffic" className="rounded-xl border border-slate-200 p-4 transition-colors hover:border-brand-200 hover:bg-brand-50/40">
               <div className="font-semibold text-sm">🌍 Traffic sources</div>
               <div className="text-xs text-slate-500 mt-1">UTM + referrers</div>
             </Link>
@@ -206,31 +206,10 @@ function KpiCard({
       <div className="text-xs text-slate-500 mt-1">{sub}</div>
     </>
   );
-  const cls = `bg-gradient-to-br ${colors[accent]} bg-white rounded-xl p-5 border border-slate-200`;
+  const cls = `bg-gradient-to-br ${colors[accent]} bg-white rounded-xl p-5 border border-slate-200 shadow-card`;
   return href ? (
-    <Link href={href} className={cls + " hover:shadow-md transition"}>{body}</Link>
+    <Link href={href} className={cls + " transition-shadow hover:shadow-soft"}>{body}</Link>
   ) : (
     <div className={cls}>{body}</div>
   );
-}
-
-function Panel({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 className="font-bold text-slate-900 mb-3">{title}</h3>
-      {children}
-    </div>
-  );
-}
-
-function statusColor(status: string) {
-  switch (status) {
-    case "NEW": return "bg-emerald-100 text-emerald-700";
-    case "CONTACTED": return "bg-blue-100 text-blue-700";
-    case "QUOTED": return "bg-purple-100 text-purple-700";
-    case "NEGOTIATING": return "bg-amber-100 text-amber-700";
-    case "WON": return "bg-green-100 text-green-700";
-    case "LOST": return "bg-slate-100 text-slate-600";
-    default: return "bg-slate-100 text-slate-600";
-  }
 }

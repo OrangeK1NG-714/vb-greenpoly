@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { STATUS_SUBTLE, statusClass } from "@/components/ui/status";
 
 const STATUSES = ["NEW", "CONTACTED", "QUOTED", "NEGOTIATING", "WON", "LOST"];
 
@@ -33,23 +34,11 @@ export default function InquiryStatusSelect({ id, current }: { id: string; curre
       value={value}
       onChange={onChange}
       disabled={saving}
-      className={`text-xs font-semibold px-2 py-1 rounded border ${statusClass(value)}`}
+      className={`text-xs font-semibold px-2 py-1 rounded border outline-none transition-colors focus:ring-2 focus:ring-brand-100 disabled:opacity-60 ${statusClass(STATUS_SUBTLE, value)}`}
     >
       {STATUSES.map((s) => (
         <option key={s} value={s}>{s}</option>
       ))}
     </select>
   );
-}
-
-function statusClass(status: string) {
-  const map: Record<string, string> = {
-    NEW: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    CONTACTED: "bg-blue-50 text-blue-700 border-blue-200",
-    QUOTED: "bg-purple-50 text-purple-700 border-purple-200",
-    NEGOTIATING: "bg-amber-50 text-amber-700 border-amber-200",
-    WON: "bg-green-50 text-green-700 border-green-200",
-    LOST: "bg-slate-50 text-slate-700 border-slate-200",
-  };
-  return map[status] ?? map.NEW;
 }

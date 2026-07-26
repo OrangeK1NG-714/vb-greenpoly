@@ -149,7 +149,7 @@ export default function ContactForm() {
           name="product"
           required
           defaultValue={initialProductLabel}
-          className="w-full border border-slate-300 rounded-lg px-3 py-2.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none bg-white"
+          className="input-field"
         >
           <option value="">{t("productPlaceholder")}</option>
           {initialProductLabel && (
@@ -188,7 +188,7 @@ export default function ContactForm() {
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-semibold text-slate-700 mb-1">{t("volume")} *</label>
-          <select name="volume" required className="w-full border border-slate-300 rounded-lg px-3 py-2.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none bg-white">
+          <select name="volume" required className="input-field">
             <option value="">{t("volumePlaceholder")}</option>
             <option>{t("volumeOpts.sample")}</option>
             <option>{t("volumeOpts.small")}</option>
@@ -199,7 +199,7 @@ export default function ContactForm() {
         </div>
         <div>
           <label className="block text-sm font-semibold text-slate-700 mb-1">{t("incoterms")}</label>
-          <select name="incoterms" className="w-full border border-slate-300 rounded-lg px-3 py-2.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none bg-white">
+          <select name="incoterms" className="input-field">
             <option>FOB Ningbo</option>
             <option>CIF</option>
             <option>CFR</option>
@@ -215,14 +215,14 @@ export default function ContactForm() {
           rows={4}
           placeholder={t("messagePh")}
           defaultValue={initialMessage}
-          className="w-full border border-slate-300 rounded-lg px-3 py-2.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+          className="input-field"
         />
       </div>
 
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="w-full bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white font-semibold py-3.5 rounded-lg transition"
+        className="w-full bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white font-semibold py-3.5 rounded-lg transition-colors"
         data-track="cta_form_submit"
       >
         {status === "submitting" ? t("submitting") : t("submit")}
@@ -260,7 +260,7 @@ function Field({
         name={name}
         required={required}
         placeholder={placeholder}
-        className="w-full border border-slate-300 rounded-lg px-3 py-2.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+        className="input-field"
       />
     </div>
   );

@@ -52,7 +52,7 @@ export default async function VisitorDetail({ params }: { params: Promise<{ id: 
       </Link>
 
       {/* Header card */}
-      <div className="bg-white border border-slate-200 rounded-xl p-6">
+      <div className="admin-card p-6">
         <div className="flex items-start justify-between flex-wrap gap-4">
           <div>
             <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
@@ -83,7 +83,7 @@ export default async function VisitorDetail({ params }: { params: Promise<{ id: 
       </div>
 
       {/* IP + Location */}
-      <div className="bg-white border border-slate-200 rounded-xl p-6">
+      <div className="admin-card p-6">
         <h2 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
           🌍 IP & edge location
         </h2>
@@ -131,7 +131,7 @@ export default async function VisitorDetail({ params }: { params: Promise<{ id: 
 
       {/* Device + traffic source */}
       <div className="grid lg:grid-cols-2 gap-6">
-        <div className="bg-white border border-slate-200 rounded-xl p-6">
+        <div className="admin-card p-6">
           <h2 className="font-bold text-slate-900 mb-4">🖥️ Device</h2>
           <div className="space-y-3">
             <Field label="Browser" value={browser ? `${browser.name ?? "?"} ${browser.version ?? ""}`.trim() : null} />
@@ -141,7 +141,7 @@ export default async function VisitorDetail({ params }: { params: Promise<{ id: 
           </div>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-6">
+        <div className="admin-card p-6">
           <h2 className="font-bold text-slate-900 mb-4">📈 Traffic source</h2>
           <div className="space-y-3">
             <Field label="Referrer" value={session.referrer} mono small />
@@ -154,7 +154,7 @@ export default async function VisitorDetail({ params }: { params: Promise<{ id: 
 
       {/* Linked inquiries */}
       {inquiries.length > 0 && (
-        <div className="bg-white border border-slate-200 rounded-xl p-6">
+        <div className="admin-card p-6">
           <h2 className="font-bold text-slate-900 mb-4">📬 Linked inquiries</h2>
           <ul className="divide-y divide-slate-100">
             {inquiries.map((inq) => (
@@ -178,7 +178,7 @@ export default async function VisitorDetail({ params }: { params: Promise<{ id: 
       )}
 
       {/* Pages visited */}
-      <div className="bg-white border border-slate-200 rounded-xl p-6">
+      <div className="admin-card p-6">
         <h2 className="font-bold text-slate-900 mb-1">📄 Pages visited</h2>
         <p className="text-xs text-slate-500 mb-4">In order of first view ({pagesVisitedOrder.length} unique)</p>
         {pagesVisitedOrder.length === 0 ? (
@@ -197,7 +197,7 @@ export default async function VisitorDetail({ params }: { params: Promise<{ id: 
       </div>
 
       {/* Full timeline */}
-      <div className="bg-white border border-slate-200 rounded-xl p-6">
+      <div className="admin-card p-6">
         <h2 className="font-bold text-slate-900 mb-1">🕒 Full event timeline</h2>
         <p className="text-xs text-slate-500 mb-4">Every event recorded for this visitor ({events.length})</p>
         {events.length === 0 ? (

@@ -2,21 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Design tokens ─────────────────────────────────────────
+   Single source of truth for the GreenPoly recycling brand.
+   Values mirror the Tailwind `brand` / `accent` / `forest` /
+   `sand` scales in tailwind.config.ts. */
 :root {
-  --brand: #047857;
-  --brand-dark: #065f46;
-  --brand-light: #d1fae5;
+  /* Brand greens (emerald ramp) */
+  --brand-50: #ecfdf5;
+  --brand-100: #d1fae5;
+  --brand-200: #a7f3d0;
+  --brand-300: #6ee7b7;
+  --brand-400: #34d399;
+  --brand-500: #10b981;
+  --brand-600: #059669;
+  --brand-700: #047857;
+  --brand-800: #065f46;
+  --brand-900: #064e3b;
+  --brand: var(--brand-700);
+  --brand-dark: var(--brand-800);
+  --brand-light: var(--brand-100);
+
+  /* Warm conversion accent */
   --accent: #f59e0b;
+  --accent-dark: #d97706;
+  --accent-light: #fef3c7;
+
+  /* Deep forest for dark sections */
+  --forest-800: #0b3d2e;
+  --forest-900: #052e24;
+  --forest: #07352a;
+
+  /* Neutrals */
   --sand: #faf9f5;
+  --foreground: #14211c;
+
+  /* Focus ring */
+  --ring: var(--brand-600);
 }
 
 html {
   scroll-behavior: smooth;
 }
 body {
-  color: #14211c;
+  color: var(--foreground);
   background: var(--sand);
   font-family: var(--font-sans), "Noto Sans Thai", Tahoma, ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Thai UI reads better with a touch more line-height and no italics. */
@@ -24,17 +56,30 @@ body {
   line-height: 1.65;
 }
 
+@layer base {
+  /* Consistent keyboard focus ring across every interactive element. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
+
 @layer components {
   /* ── Buttons ───────────────────────────────────────────── */
   .btn-primary {
-    @apply inline-flex items-center justify-center bg-brand-700 hover:bg-brand-800 text-white font-semibold px-6 py-3 rounded-xl transition shadow-soft;
+    @apply inline-flex items-center justify-center bg-brand-700 hover:bg-brand-800 text-white font-semibold px-6 py-3 rounded-xl transition-colors duration-200 shadow-soft;
   }
   /* Warm conversion CTA — the "money" button (Get Quote / WhatsApp) */
   .btn-accent {
-    @apply inline-flex items-center justify-center gap-2 bg-accent hover:bg-accent-dark text-forest-900 font-bold px-6 py-3 rounded-xl transition shadow-soft;
+    @apply inline-flex items-center justify-center gap-2 bg-accent hover:bg-accent-dark text-forest-900 font-bold px-6 py-3 rounded-xl transition-colors duration-200 shadow-soft;
   }
   .btn-outline {
-    @apply inline-flex items-center justify-center border-2 border-brand-700 text-brand-700 hover:bg-brand-700 hover:text-white font-semibold px-6 py-3 rounded-xl transition;
+    @apply inline-flex items-center justify-center border-2 border-brand-700 text-brand-700 hover:bg-brand-700 hover:text-white font-semibold px-6 py-3 rounded-xl transition-colors duration-200;
+  }
+
+  /* ── Form controls ─────────────────────────────────────── */
+  .input-field {
+    @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-100;
   }
 
   /* ── Surfaces ──────────────────────────────────────────── */
@@ -76,5 +121,19 @@ body {
   }
   .spec-table tr:hover td {
     @apply bg-sand;
+  }
+
+  /* ── Admin surfaces ────────────────────────────────────── */
+  .admin-card {
+    @apply rounded-xl border border-slate-200 bg-white shadow-card;
+  }
+  .admin-table {
+    @apply w-full text-sm;
+  }
+  .admin-table thead {
+    @apply border-b border-slate-200 bg-slate-50;
+  }
+  .admin-table th {
+    @apply px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500;
   }
 }

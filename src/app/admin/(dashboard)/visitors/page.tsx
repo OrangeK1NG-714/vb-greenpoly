@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
+import PageHeader from "@/components/ui/PageHeader";
 import { format, formatDistanceToNow } from "date-fns";
 
 export const dynamic = "force-dynamic";
@@ -66,27 +67,25 @@ export default async function VisitorsPage({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Visitors</h1>
-          <p className="text-xs text-slate-500 mt-1">IP, edge-provided location and recent activity. Location is approximate.</p>
-        </div>
-        <span className="text-sm text-slate-500">{total} total · page {pageNum}/{totalPages}</span>
-      </div>
+      <PageHeader
+        title="Visitors"
+        subtitle="IP, edge-provided location and recent activity. Location is approximate."
+        meta={`${total} total · page ${pageNum}/${totalPages}`}
+      />
 
       {/* Filters */}
-      <form className="flex flex-wrap items-center gap-2 bg-white border border-slate-200 rounded-xl p-3">
+      <form className="admin-card flex flex-wrap items-center gap-2 p-3">
         <input
           type="text"
           name="q"
           defaultValue={q}
           placeholder="Search IP, city, country, ISP, session id…"
-          className="flex-1 min-w-[200px] border border-slate-200 rounded-lg px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+          className="input-field flex-1 min-w-[200px] text-sm !py-2"
         />
         <select
           name="country"
           defaultValue={country ?? ""}
-          className="border border-slate-200 rounded-lg px-2 py-2 text-sm bg-white"
+          className="input-field w-auto text-sm !px-2 !py-2"
         >
           <option value="">All countries</option>
           {countries.map((c) => (
@@ -98,12 +97,12 @@ export default async function VisitorsPage({
         <select
           name="only"
           defaultValue={only ?? ""}
-          className="border border-slate-200 rounded-lg px-2 py-2 text-sm bg-white"
+          className="input-field w-auto text-sm !px-2 !py-2"
         >
           <option value="">All visitors</option>
           <option value="inquired">Inquired only</option>
         </select>
-        <button type="submit" className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold px-4 py-2 rounded-lg text-sm">
+        <button type="submit" className="bg-emerald-700 hover:bg-emerald-800 transition-colors text-white font-semibold px-4 py-2 rounded-lg text-sm">
           Search
         </button>
         {(q || country || only) && (
@@ -114,24 +113,24 @@ export default async function VisitorsPage({
       </form>
 
       {sessions.length === 0 ? (
-        <div className="bg-white border border-slate-200 rounded-xl p-12 text-center">
+        <div className="admin-card p-12 text-center">
           <div className="text-4xl mb-3">👥</div>
           <p className="text-slate-600">No visitor sessions match. Visit the public site to generate data.</p>
         </div>
       ) : (
-        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+        <div className="admin-card overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-slate-50 border-b border-slate-200">
+            <table className="admin-table">
+              <thead>
                 <tr>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700">Last seen</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700">Location</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700">IP</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700">ISP</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700">Last page</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700">Activity</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700">Source</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-700"></th>
+                  <th>Last seen</th>
+                  <th>Location</th>
+                  <th>IP</th>
+                  <th>ISP</th>
+                  <th>Last page</th>
+                  <th>Activity</th>
+                  <th>Source</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -139,7 +138,7 @@ export default async function VisitorsPage({
                   const last = lastPageBySession.get(s.id);
                   const flag = countryToFlag(s.countryCode);
                   return (
-                    <tr key={s.id} className="hover:bg-slate-50">
+                    <tr key={s.id} className="transition-colors hover:bg-slate-50">
                       <td className="px-4 py-3 whitespace-nowrap">
                         <div className="text-slate-700">{formatDistanceToNow(s.lastSeen, { addSuffix: true })}</div>
                         <div className="text-xs text-slate-400">{format(s.lastSeen, "MMM d, HH:mm")}</div>
@@ -206,7 +205,7 @@ export default async function VisitorsPage({
                 {pageNum > 1 && (
                   <Link
                     href={buildHref({ q, country, only, page: pageNum - 1 })}
-                    className="px-3 py-1.5 rounded border border-slate-200 bg-white hover:bg-slate-100 text-slate-700"
+                    className="px-3 py-1.5 rounded-lg border border-slate-200 bg-white transition-colors hover:bg-slate-100 text-slate-700"
                   >
                     ← Prev
                   </Link>
@@ -214,7 +213,7 @@ export default async function VisitorsPage({
                 {pageNum < totalPages && (
                   <Link
                     href={buildHref({ q, country, only, page: pageNum + 1 })}
-                    className="px-3 py-1.5 rounded border border-slate-200 bg-white hover:bg-slate-100 text-slate-700"
+                    className="px-3 py-1.5 rounded-lg border border-slate-200 bg-white transition-colors hover:bg-slate-100 text-slate-700"
                   >
                     Next →
                   </Link>

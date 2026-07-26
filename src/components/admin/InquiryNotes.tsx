@@ -33,7 +33,7 @@ export default function InquiryNotes({ id, initial }: { id: string; initial: str
         onBlur={save}
         rows={4}
         placeholder="Sales notes, follow-up reminders..."
-        className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+        className="input-field text-sm"
       />
     </div>
   );

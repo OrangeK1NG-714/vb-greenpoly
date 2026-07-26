@@ -33,7 +33,7 @@ export default async function InquiryDetail({ params }: { params: Promise<{ id: 
         ← Back to inquiries
       </Link>
 
-      <div className="bg-white border border-slate-200 rounded-xl p-6">
+      <div className="admin-card p-6">
         <div className="flex items-start justify-between flex-wrap gap-4 mb-6">
           <div>
             <h1 className="text-2xl font-bold text-slate-900">{inquiry.name}</h1>
@@ -66,7 +66,7 @@ export default async function InquiryDetail({ params }: { params: Promise<{ id: 
       </div>
 
       {/* Visitor Journey */}
-      <div className="bg-white border border-slate-200 rounded-xl p-6">
+      <div className="admin-card p-6">
         <h2 className="font-bold text-slate-900 mb-1">Visitor journey</h2>
         <p className="text-xs text-slate-500 mb-4">Every page this lead viewed before submitting</p>
         {sessionEvents.length === 0 ? (

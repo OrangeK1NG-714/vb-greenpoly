@@ -19,6 +19,7 @@ import {
   TradeTodoPanel,
   type TradeProductOption,
 } from "@/components/admin/TradeWorkflowWorkspace";
+import { STATUS_BAR, STATUS_SUBTLE, statusClass } from "@/components/ui/status";
 
 type WorkspaceTab = "pipeline" | "quote" | "sample" | "outreach";
 
@@ -372,15 +373,7 @@ function SelectField({ label, value, onChange, options, includeCurrent = false }
 }
 
 function StatusBadge({ status }: { status: string }) {
-  const colors: Record<string, string> = {
-    NEW: "bg-emerald-50 text-emerald-700",
-    CONTACTED: "bg-sky-50 text-sky-700",
-    QUOTED: "bg-violet-50 text-violet-700",
-    NEGOTIATING: "bg-amber-50 text-amber-700",
-    WON: "bg-green-50 text-green-700",
-    LOST: "bg-slate-100 text-slate-600",
-  };
-  return <span className={`rounded px-1.5 py-0.5 text-[10px] font-bold ${colors[status] ?? colors.LOST}`}>{status}</span>;
+  return <span className={`rounded px-1.5 py-0.5 text-[10px] font-bold ${statusClass(STATUS_SUBTLE, status)}`}>{status}</span>;
 }
 
 function priorityDot(priority: ReturnType<typeof getLeadAction>["priority"]) {
@@ -391,13 +384,5 @@ function priorityDot(priority: ReturnType<typeof getLeadAction>["priority"]) {
 }
 
 function statusBar(status: string) {
-  const colors: Record<string, string> = {
-    NEW: "bg-emerald-500",
-    CONTACTED: "bg-sky-500",
-    QUOTED: "bg-violet-500",
-    NEGOTIATING: "bg-amber-500",
-    WON: "bg-green-600",
-    LOST: "bg-slate-400",
-  };
-  return colors[status] ?? colors.LOST;
+  return statusClass(STATUS_BAR, status);
 }
