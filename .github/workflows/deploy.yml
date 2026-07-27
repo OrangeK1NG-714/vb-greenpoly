@@ -32,6 +32,7 @@ jobs:
         cp -a .next/static "$release_root/.next/static"
         cp -a public "$release_root/public"
         cp -a prisma "$release_root/prisma"
+        cp -a prisma.config.ts "$release_root/prisma.config.ts"
         find "$release_root" -maxdepth 2 -type f -name '.env*' -delete
         if find "$release_root" -maxdepth 2 -type f -name '.env*' -print -quit | grep -q .; then
           echo "standalone release contains an environment file" >&2
