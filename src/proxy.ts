@@ -13,7 +13,7 @@ const intlMiddleware = createMiddleware({
 const LOCALE_COOKIE = "NEXT_LOCALE";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365; // 1 year
 
-export default function middleware(req: NextRequest) {
+export default function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // Skip intl middleware for API and admin routes entirely — intl would
@@ -65,5 +65,8 @@ export default function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next|_vercel|.*\\..*).*)"],
+  // opengraph-image / twitter-image are extension-less metadata file routes at
+  // the app root; without the exclusion the intl middleware rewrites them into
+  // the [locale] tree and they 404 in production.
+  matcher: ["/((?!_next|_vercel|opengraph-image|twitter-image|.*\\..*).*)"],
 };

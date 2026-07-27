@@ -113,7 +113,7 @@ greenpoly/
 │   │   ├── sales-tools.ts     # 报价、待办和多语言草稿纯逻辑
 │   │   └── products-data.ts   # 产品目录
 │   ├── i18n/                  # next-intl 配置
-│   └── middleware.ts          # 多语言中间件
+│   └── proxy.ts               # 多语言请求代理
 └── package.json
 ```
 

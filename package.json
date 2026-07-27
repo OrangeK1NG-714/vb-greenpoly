@@ -23,7 +23,7 @@
     "dotenv": "^17.4.2",
     "jose": "^6.2.3",
     "nanoid": "^5.1.16",
-    "next": "16.2.10",
+    "next": "16.2.12",
     "next-intl": "^4.13.2",
     "prisma": "^7.9.0",
     "react": "^18",
@@ -37,14 +37,17 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/ua-parser-js": "^0.7.39",
-    "eslint": "^9.39.5",
-    "eslint-config-next": "16.2.10",
-    "postcss": "^8.5.20",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.2.12",
+    "postcss": "8.5.23",
     "tailwindcss": "^3.4.1",
     "tsx": "^4.22.4",
     "typescript": "^5"
   },
   "overrides": {
-    "postcss": "^8.5.20"
+    "find-my-way": "9.7.0",
+    "postcss": "8.5.23",
+    "sharp": "0.35.3",
+    "valibot": "1.4.2"
   }
 }
