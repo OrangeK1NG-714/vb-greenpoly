@@ -110,6 +110,7 @@ jobs:
             mkdir -p "$TOOLING_DIR"
             cp -al "$PREVIOUS_DIR/node_modules" "$TOOLING_DIR/node_modules"
           fi
+          export NODE_PATH="$TOOLING_DIR/node_modules"
           "$TOOLING_DIR/node_modules/.bin/prisma" migrate deploy \
             --schema "$RELEASE_DIR/prisma/schema.prisma"
 
