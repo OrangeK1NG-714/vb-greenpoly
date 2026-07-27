@@ -11,10 +11,10 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: Setup Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v7
       with:
         node-version: '22'
 
@@ -119,7 +119,8 @@ jobs:
             directory="$2"
             port="$3"
             if [ -f "$directory/server.js" ]; then
-              HOSTNAME=127.0.0.1 PORT="$port" pm2 start "$directory/server.js" \
+              NODE_OPTIONS=--dns-result-order=ipv4first \
+                HOSTNAME=localhost PORT="$port" pm2 start "$directory/server.js" \
                 --name "$name" --cwd "$directory"
             else
               PORT="$port" pm2 start npm --name "$name" --cwd "$directory" -- start
