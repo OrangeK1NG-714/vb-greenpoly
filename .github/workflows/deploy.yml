@@ -21,6 +21,8 @@ jobs:
     - name: Build production release
       run: |
         set -Eeuo pipefail
+        npm install --global npm@11.12.1 --no-audit --no-fund
+        npm --version
         npm ci --no-audit --no-fund
         npx prisma generate
         npm run build
