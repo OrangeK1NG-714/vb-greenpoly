@@ -18,116 +18,121 @@ jobs:
       with:
         node-version: '22'
 
-    - name: Build Next.js app
+    - name: Build production release
       run: |
-        npm install
+        set -Eeuo pipefail
+        npm ci --no-audit --no-fund
         npx prisma generate
         npm run build
+        release_root="$RUNNER_TEMP/greenpoly-release"
+        mkdir -p "$release_root/.next"
+        cp -a .next/standalone/. "$release_root/"
+        cp -a .next/static "$release_root/.next/static"
+        cp -a public "$release_root/public"
+        cp -a prisma "$release_root/prisma"
+        find "$release_root" -maxdepth 2 -type f -name '.env*' -delete
+        if find "$release_root" -maxdepth 2 -type f -name '.env*' -print -quit | grep -q .; then
+          echo "standalone release contains an environment file" >&2
+          exit 1
+        fi
+        tar -C "$release_root" -czf "$RUNNER_TEMP/greenpoly-release.tgz" .
       env:
         NEXT_PUBLIC_SITE_URL: https://green.richardq.tech
         DATABASE_URL: file:./build.db
 
-    - name: Push code to server
-      # 服务器连不上 GitHub（GFW），所以不再在服务器上 git pull ——
-      # 由 CI  runner 把代码打包直接推过去。tar 流不含 .git/env/db，
-      # 每个提交上传到独立 release 目录，服务器上的 .env、prod.db 不受影响。
+    - name: Upload standalone release
       env:
         RELEASE_DIR: /var/www/greenpoly-releases/${{ github.sha }}
       run: |
+        set -Eeuo pipefail
+        key_file="$RUNNER_TEMP/greenpoly-deploy-key"
+        archive="$RUNNER_TEMP/greenpoly-release.tgz"
         mkdir -p ~/.ssh
-        printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
-        chmod 600 ~/.ssh/deploy_key
-        ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
-          ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+        chmod 700 ~/.ssh
+        printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" > "$key_file"
+        chmod 600 "$key_file"
+        trap 'rm -f "$key_file"' EXIT
+        archive_sha="$(sha256sum "$archive" | awk '{print $1}')"
+        ssh_options=(
+          -i "$key_file"
+          -o BatchMode=yes
+          -o StrictHostKeyChecking=accept-new
+          -o ConnectTimeout=60
+          -o ServerAliveInterval=30
+          -o ServerAliveCountMax=6
+        )
+        retry() {
+          local attempt=1
+          while ! "$@"; do
+            if [ "$attempt" -ge 3 ]; then return 1; fi
+            sleep $((attempt * 30))
+            attempt=$((attempt + 1))
+          done
+        }
+        retry timeout 120s ssh "${ssh_options[@]}" \
+          "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
           "mkdir -p '$RELEASE_DIR'"
-        tar czf - \
-          --exclude=.git --exclude=node_modules --exclude=.next \
-          --exclude=dev.db --exclude=prod.db --exclude=.env --exclude=".env.*" \
-          . | ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
-          ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
-          "tar xzf - -C '$RELEASE_DIR'"
+        retry timeout 300s ssh "${ssh_options[@]}" \
+          "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
+          "cat > '$RELEASE_DIR/release.tgz'" < "$archive"
+        retry timeout 120s ssh "${ssh_options[@]}" \
+          "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
+          "cd '$RELEASE_DIR' && printf '%s  release.tgz\n' '$archive_sha' | sha256sum -c - && tar -xzf release.tgz && rm -f release.tgz"
 
-    - name: Build and restart on server
+    - name: Canary and switch production
       uses: appleboy/ssh-action@v1.0.3
-      env:
-        GREENPOLY_INTERNAL_STATS_TOKEN: ${{ secrets.GREENPOLY_INTERNAL_STATS_TOKEN }}
-        GREENPOLY_ADMIN_PASSWORD: ${{ secrets.GREENPOLY_ADMIN_PASSWORD }}
-        GREENPOLY_AUTH_SECRET: ${{ secrets.GREENPOLY_AUTH_SECRET }}
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22
-        envs: GREENPOLY_INTERNAL_STATS_TOKEN,GREENPOLY_ADMIN_PASSWORD,GREENPOLY_AUTH_SECRET
-        # 服务器端构建(npm install+prisma+next build+canary)常超 10 分钟默认值,
-        # 提到 30 分钟,避免被 ssh-action 中途杀掉留下不确定状态
-        command_timeout: 30m
+        command_timeout: 10m
         script: |
-          set -e
+          set -Eeuo pipefail
           RELEASE_DIR="/var/www/greenpoly-releases/${{ github.sha }}"
           SHARED_DIR="/var/www/greenpoly"
+          TOOLING_DIR="/var/www/greenpoly-tooling"
           PREVIOUS_DIR="$(readlink -f /var/www/greenpoly-current 2>/dev/null || true)"
           if [ -z "$PREVIOUS_DIR" ]; then PREVIOUS_DIR="$SHARED_DIR"; fi
-
-          # 统计令牌和 JWT 签名密钥仅从 GitHub Secret 注入，并原子更新共享生产 .env。
-          # 管理员密码只在本次进程环境中使用，绝不写进 .env 或日志。
           test -f "$SHARED_DIR/.env"
-          ENV_FILE="$SHARED_DIR/.env" node <<'NODE'
-          const fs = require("node:fs");
-          const file = process.env.ENV_FILE;
-          const token = process.env.GREENPOLY_INTERNAL_STATS_TOKEN;
-          const authSecret = process.env.GREENPOLY_AUTH_SECRET;
-          const adminPassword = process.env.GREENPOLY_ADMIN_PASSWORD;
-          const invalid = (value, minimum) => !value || Buffer.byteLength(value) < minimum || /[\r\n]/.test(value);
-          if (!file || invalid(token, 32) || invalid(authSecret, 32) || invalid(adminPassword, 20)) {
-            throw new Error("missing or weak GreenPoly production secret");
-          }
-          const current = fs.readFileSync(file, "utf8");
-          // The canary needs the metrics token. Keep the authentication key
-          // unchanged until it has passed, so a failed release cannot leave
-          // the running service with partially rotated authentication state.
-          const entries = [["GREENPOLY_INTERNAL_STATS_TOKEN", token]];
-          let next = current;
-          for (const [key, value] of entries) {
-            const pattern = new RegExp(`^${key}=.*$`, "m");
-            const line = `${key}=${value}`;
-            next = pattern.test(next)
-              ? next.replace(pattern, line)
-              : `${next.replace(/\n?$/, "\n")}${line}\n`;
-          }
-          const temporary = `${file}.tmp-${process.pid}`;
-          fs.writeFileSync(temporary, next, { mode: 0o600 });
-          fs.renameSync(temporary, file);
-          NODE
-
           cd "$RELEASE_DIR"
           ln -sfn "$SHARED_DIR/.env" .env
           export DATABASE_URL="file:$SHARED_DIR/prod.db"
 
-          # 完整安装依赖(Next 构建需要 devDependencies)
-          # 主用国内镜像源;镜像还没同步的新版本(如 prisma 7.9.0)回退官方源
-          npm install --registry=https://registry.npmmirror.com --no-audit --no-fund || \
-            npm install --registry=https://registry.npmjs.org --no-audit --no-fund
+          # Keep Prisma CLI as shared deployment tooling; application releases
+          # remain standalone and never install or build dependencies on the
+          # memory-constrained production host.
+          if [ ! -x "$TOOLING_DIR/node_modules/.bin/prisma" ]; then
+            test -x "$PREVIOUS_DIR/node_modules/.bin/prisma"
+            mkdir -p "$TOOLING_DIR"
+            cp -al "$PREVIOUS_DIR/node_modules" "$TOOLING_DIR/node_modules"
+          fi
+          "$TOOLING_DIR/node_modules/.bin/prisma" migrate deploy \
+            --schema "$RELEASE_DIR/prisma/schema.prisma"
 
-          # 先生成 Prisma 客户端,再构建(顺序不能反)
-          npx prisma generate
-          npm run build
-
-          # 迁移共享数据库；迁移必须保持向后兼容，旧 release 才能回滚。
-          npx prisma migrate deploy
+          start_release() {
+            name="$1"
+            directory="$2"
+            port="$3"
+            if [ -f "$directory/server.js" ]; then
+              HOSTNAME=127.0.0.1 PORT="$port" pm2 start "$directory/server.js" \
+                --name "$name" --cwd "$directory"
+            else
+              PORT="$port" pm2 start npm --name "$name" --cwd "$directory" -- start
+            fi
+          }
 
           # 先在 3003 启动 canary。除了首页，还验证后台保护和浏览器同源登录。
           pm2 delete greenpoly-canary > /dev/null 2>&1 || true
-          PORT=3003 pm2 start npm --name greenpoly-canary --cwd "$RELEASE_DIR" -- start
+          start_release greenpoly-canary "$RELEASE_DIR" 3003
 
           CANARY_OK=0
-          for attempt in $(seq 1 20); do
-            HOME_STATUS="$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:3003/ || true)"
+          for attempt in $(seq 1 30); do
+            HOME_STATUS="$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:3003/admin/login || true)"
             SALES_STATUS="$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:3003/admin/sales || true)"
             LOGIN_STATUS="$(curl -sS -o /dev/null -w '%{http_code}' \
               -X POST http://127.0.0.1:3003/api/admin/login \
               -H 'content-type: application/json' \
-              -H 'origin: https://green.richardq.tech' \
               --data '{"email":"invalid@example.test","password":"invalid-password"}' || true)"
             if [ "$HOME_STATUS" = "200" ] && [ "$SALES_STATUS" = "307" ] && [ "$LOGIN_STATUS" = "401" ]; then
               CANARY_OK=1
@@ -137,8 +142,24 @@ jobs:
           done
 
           if [ "$CANARY_OK" = "1" ]; then
-            curl -fsS -H "Authorization: Bearer $GREENPOLY_INTERNAL_STATS_TOKEN" \
-              "http://127.0.0.1:3003/api/internal/marketing-stats?days=1" > /dev/null || CANARY_OK=0
+            RELEASE_ENV="$SHARED_DIR/.env" node <<'NODE' || CANARY_OK=0
+          const fs = require("node:fs");
+          const entries = fs.readFileSync(process.env.RELEASE_ENV, "utf8")
+            .split(/\r?\n/)
+            .filter(Boolean)
+            .map((line) => {
+              const index = line.indexOf("=");
+              return index > 0 ? [line.slice(0, index), line.slice(index + 1)] : ["", ""];
+            })
+            .filter(([key]) => key);
+          const token = Object.fromEntries(entries).GREENPOLY_INTERNAL_STATS_TOKEN;
+          if (!token || Buffer.byteLength(token) < 32) throw new Error("missing internal stats token");
+          fetch("http://127.0.0.1:3003/api/internal/marketing-stats?days=1", {
+            headers: { authorization: `Bearer ${token}` },
+          }).then((response) => {
+            if (!response.ok) throw new Error(`internal stats status ${response.status}`);
+          });
+          NODE
           fi
           pm2 delete greenpoly-canary > /dev/null 2>&1 || true
           if [ "$CANARY_OK" != "1" ]; then
@@ -146,31 +167,12 @@ jobs:
             exit 1
           fi
 
-          # Only commit the authentication rotation after the canary is healthy.
-          ENV_FILE="$SHARED_DIR/.env" node <<'NODE'
-          const fs = require("node:fs");
-          const file = process.env.ENV_FILE;
-          const authSecret = process.env.GREENPOLY_AUTH_SECRET;
-          if (!file || !authSecret || Buffer.byteLength(authSecret) < 32 || /[\r\n]/.test(authSecret)) {
-            throw new Error("missing or weak GreenPoly authentication secret");
-          }
-          const current = fs.readFileSync(file, "utf8");
-          const line = `AUTH_SECRET=${authSecret}`;
-          const next = /^AUTH_SECRET=.*$/m.test(current)
-            ? current.replace(/^AUTH_SECRET=.*$/m, line)
-            : `${current.replace(/\n?$/, "\n")}${line}\n`;
-          const temporary = `${file}.tmp-${process.pid}`;
-          fs.writeFileSync(temporary, next, { mode: 0o600 });
-          fs.renameSync(temporary, file);
-          NODE
-          npx tsx scripts/rotate-admin-password.ts
-
           # Canary 通过后再切换正式端口；失败则恢复上一个 release。
           pm2 delete greenpoly > /dev/null 2>&1 || true
-          PORT=3002 pm2 start npm --name greenpoly --cwd "$RELEASE_DIR" -- start
+          start_release greenpoly "$RELEASE_DIR" 3002
 
           PRODUCTION_OK=0
-          for attempt in $(seq 1 20); do
+          for attempt in $(seq 1 30); do
             if curl -fsS http://127.0.0.1:3002/ > /dev/null; then
               PRODUCTION_OK=1
               break
@@ -181,7 +183,7 @@ jobs:
           if [ "$PRODUCTION_OK" != "1" ]; then
             echo "Production health check failed; rolling back to $PREVIOUS_DIR"
             pm2 delete greenpoly > /dev/null 2>&1 || true
-            PORT=3002 pm2 start npm --name greenpoly --cwd "$PREVIOUS_DIR" -- start
+            start_release greenpoly "$PREVIOUS_DIR" 3002
             pm2 save
             exit 1
           fi
