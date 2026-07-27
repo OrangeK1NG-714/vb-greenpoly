@@ -41,7 +41,7 @@ jobs:
           ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
           "mkdir -p '$RELEASE_DIR'"
         tar czf - \
-          --exclude=.git --exclude=node_modules \
+          --exclude=.git --exclude=node_modules --exclude=.next \
           --exclude=dev.db --exclude=prod.db --exclude=.env --exclude=".env.*" \
           . | ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
           ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
@@ -104,20 +104,14 @@ jobs:
           ln -sfn "$SHARED_DIR/.env" .env
           export DATABASE_URL="file:$SHARED_DIR/prod.db"
 
-          # CI 已构建 .next,服务器只需安装生产依赖并生成 Prisma 客户端。
-          # 若 CI 构建产物缺失或不兼容,仍完整重建作为降级路径。
-          if [ ! -d .next ] || [ ! -f .next/BUILD_ID ]; then
-            echo "⚠️  CI 构建产物缺失，服务器端完整重建"
-            npm install --registry=https://registry.npmmirror.com --no-audit --no-fund || \
-              npm install --registry=https://registry.npmjs.org --no-audit --no-fund
-            npx prisma generate
-            npm run build
-          else
-            echo "✓ 复用 CI 构建产物"
-            npm install --omit=dev --registry=https://registry.npmmirror.com --no-audit --no-fund || \
-              npm install --omit=dev --registry=https://registry.npmjs.org --no-audit --no-fund
-            npx prisma generate
-          fi
+          # 完整安装依赖(Next 构建需要 devDependencies)
+          # 主用国内镜像源;镜像还没同步的新版本(如 prisma 7.9.0)回退官方源
+          npm install --registry=https://registry.npmmirror.com --no-audit --no-fund || \
+            npm install --registry=https://registry.npmjs.org --no-audit --no-fund
+
+          # 先生成 Prisma 客户端,再构建(顺序不能反)
+          npx prisma generate
+          npm run build
 
           # 迁移共享数据库；迁移必须保持向后兼容，旧 release 才能回滚。
           npx prisma migrate deploy
