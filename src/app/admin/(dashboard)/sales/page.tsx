@@ -1,6 +1,6 @@
 import SalesWorkspace from "@/components/admin/SalesWorkspace";
 import { prisma } from "@/lib/db";
-import { goBackendEnabled, listInquiriesGo } from "@/lib/go-backend";
+import { getInquiryService } from "@/composition/server/inquiries";
 import { PRODUCTS, pick } from "@/lib/products-data";
 import { quoteRecordToData, sampleRecordToData } from "@/lib/sales-records";
 import type { SalesLead } from "@/lib/sales-tools";
@@ -8,9 +8,7 @@ import type { SalesLead } from "@/lib/sales-tools";
 export const dynamic = "force-dynamic";
 
 async function loadSalesLeads(): Promise<SalesLead[]> {
-  const inquiries = goBackendEnabled
-    ? (await listInquiriesGo()).inquiries
-    : await prisma.inquiry.findMany({ orderBy: { updatedAt: "desc" }, take: 200 });
+  const { inquiries } = await getInquiryService().list(undefined, 200, "updatedAt");
 
   return inquiries.map((inquiry) => ({
     id: inquiry.id,
@@ -29,6 +27,7 @@ async function loadSalesLeads(): Promise<SalesLead[]> {
 }
 
 export default async function SalesPage() {
+  const inquiryService = getInquiryService();
   const [leads, quoteRecords, sampleRecords] = await Promise.all([
     loadSalesLeads(),
     prisma.quoteDraft.findMany({ orderBy: { updatedAt: "desc" }, take: 500 }),
@@ -44,7 +43,7 @@ export default async function SalesPage() {
       leads={leads}
       products={products}
       asOf={new Date().toISOString()}
-      source={goBackendEnabled ? "go-backend" : "local"}
+      source={inquiryService.source}
       initialQuotes={quoteRecords.map(quoteRecordToData)}
       initialSamples={sampleRecords.map(sampleRecordToData)}
     />

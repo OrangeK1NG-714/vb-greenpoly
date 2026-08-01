@@ -54,7 +54,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html className={siteSans.variable}>
+    <html className={siteSans.variable} data-scroll-behavior="smooth">
       <body className="antialiased">{children}</body>
     </html>
   );

@@ -12,9 +12,18 @@ const intlMiddleware = createMiddleware({
 
 const LOCALE_COOKIE = "NEXT_LOCALE";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365; // 1 year
+const DEFAULT_LOCALE_REWRITE_HEADER = "x-greenpoly-default-locale-rewrite";
+const NEXT_INTL_LOCALE_HEADER = "X-NEXT-INTL-LOCALE";
 
-export default function proxy(req: NextRequest) {
+export function handleLocaleProxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
+
+  // Next.js 16 can pass an internal rewrite through Proxy a second time.
+  // Let the already-localized /en route render instead of normalizing it back
+  // to "/", which would otherwise create a redirect loop.
+  if (req.headers.get(DEFAULT_LOCALE_REWRITE_HEADER) === "1") {
+    return NextResponse.next();
+  }
 
   // Skip intl middleware for API and admin routes entirely — intl would
   // rewrite them to /en/admin/... which doesn't exist as a file route.
@@ -59,10 +68,22 @@ export default function proxy(req: NextRequest) {
   }
 
   // No match / English country → default. Set cookie so we don't recompute every visit.
-  const res = intlMiddleware(req);
+  const internalUrl = req.nextUrl.clone();
+  internalUrl.pathname = `/${defaultLocale}${pathname === "/" ? "" : pathname}`;
+
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set(DEFAULT_LOCALE_REWRITE_HEADER, "1");
+  requestHeaders.set(NEXT_INTL_LOCALE_HEADER, defaultLocale);
+
+  const intlResponse = intlMiddleware(req);
+  const res = NextResponse.rewrite(internalUrl, { request: { headers: requestHeaders } });
+  const alternateLinks = intlResponse.headers.get("link");
+  if (alternateLinks) res.headers.set("link", alternateLinks);
   res.cookies.set(LOCALE_COOKIE, defaultLocale, { maxAge: COOKIE_MAX_AGE, path: "/" });
   return res;
 }
+
+export default handleLocaleProxy;
 
 export const config = {
   // opengraph-image / twitter-image are extension-less metadata file routes at
