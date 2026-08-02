@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import animate from "tailwindcss-animate";
 
 const config: Config = {
   content: [
@@ -39,8 +40,42 @@ const config: Config = {
           900: "#052e24",
         },
         sand: "#faf9f5",
-        background: "var(--background)",
+        border: "hsl(var(--ui-border))",
+        input: "hsl(var(--ui-input))",
+        ring: "var(--ring)",
+        background: "var(--sand)",
         foreground: "var(--foreground)",
+        primary: {
+          DEFAULT: "var(--brand-700)",
+          foreground: "#ffffff",
+        },
+        secondary: {
+          DEFAULT: "var(--brand-50)",
+          foreground: "var(--forest-900)",
+        },
+        muted: {
+          DEFAULT: "#f1f5f9",
+          foreground: "var(--muted-foreground)",
+        },
+        "muted-foreground": "var(--muted-foreground)",
+        "accent-foreground": "var(--forest-900)",
+        destructive: {
+          DEFAULT: "var(--destructive)",
+          foreground: "#ffffff",
+        },
+        card: {
+          DEFAULT: "#ffffff",
+          foreground: "var(--foreground)",
+        },
+        popover: {
+          DEFAULT: "#ffffff",
+          foreground: "var(--foreground)",
+        },
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
       },
       boxShadow: {
         soft: "0 4px 24px -8px rgba(6, 78, 59, 0.12)",
@@ -61,6 +96,6 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [animate],
 };
 export default config;

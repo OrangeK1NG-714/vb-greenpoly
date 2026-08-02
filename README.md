@@ -4,6 +4,13 @@ Next.js 16 全栈应用：公开站（多语言）+ 管理后台 + 自定义埋�
 
 当前线上地址：<https://green.richardq.tech>。文档中的 `greenpoly.com` 是未来独立品牌域名示例，当前生产 canonical 由 `NEXT_PUBLIC_SITE_URL` 注入。
 
+## 🎨 公开站 UI 基线
+
+- 公开站交互优先复用 **shadcn/ui + Radix UI**：按钮、卡片、徽标、移动端抽屉、语言菜单、联系弹层和询盘表单统一使用公开组件库。
+- 图标统一使用 **Lucide React**，视觉采用克制的森林绿、暖灰和琥珀色，不单独维护私有组件库。
+- 产品主图是本地生成的场景示意图，只用于展示材料外观，不代表检测报告、认证或具体生产批次；真实交易仍以样品和批次 COA 为准。
+- 项目继续保留 Tailwind CSS 3 与现有 Next.js / next-intl 技术路线。
+
 ## 🎯 它包含什么
 
 ### 公开站（SEO + GEO 优化）

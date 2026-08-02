@@ -1,21 +1,16 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
-import { getInquiryGo, goBackendEnabled } from "@/lib/go-backend";
+import { getInquiryService } from "@/composition/server/inquiries";
 import { format } from "date-fns";
 import InquiryStatusSelect from "@/components/admin/InquiryStatusSelect";
 import InquiryNotes from "@/components/admin/InquiryNotes";
 
 export const dynamic = "force-dynamic";
 
-async function loadInquiry(id: string) {
-  if (goBackendEnabled) return getInquiryGo(id);
-  return prisma.inquiry.findUnique({ where: { id } });
-}
-
 export default async function InquiryDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const inquiry = await loadInquiry(id);
+  const inquiry = await getInquiryService().get(id);
   if (!inquiry) notFound();
 
   // Pull the visitor's full session journey if we have a sessionId

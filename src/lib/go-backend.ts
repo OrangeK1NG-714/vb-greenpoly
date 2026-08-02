@@ -78,13 +78,21 @@ export async function createInquiryGo(payload: InquiryPayload): Promise<string> 
   return body.id;
 }
 
-export async function listInquiriesGo(status?: string): Promise<{
+export async function listInquiriesGo(
+  status?: string,
+  limit = 100,
+  orderBy: "createdAt" | "updatedAt" = "createdAt",
+): Promise<{
   inquiries: GoInquiry[];
   counts: Record<string, number>;
 }> {
-  const qs = status ? `?status=${encodeURIComponent(status)}` : "";
+  const query = new URLSearchParams({
+    limit: String(limit),
+    orderBy,
+  });
+  if (status) query.set("status", status);
   const body = await goFetch<{ inquiries: unknown[]; counts: Record<string, number> }>(
-    `/api/admin/inquiries${qs}`, { method: "GET" }, true,
+    `/api/admin/inquiries?${query}`, { method: "GET" }, true,
   );
   return { inquiries: body.inquiries.map(toInquiry), counts: body.counts ?? {} };
 }

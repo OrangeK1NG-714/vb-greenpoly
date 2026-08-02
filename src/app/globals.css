@@ -36,15 +36,19 @@
   --sand: #faf9f5;
   --foreground: #14211c;
 
-  /* Focus ring */
+  /* shadcn / Radix semantic tokens, kept inside the GreenPoly palette */
+  --ui-border: 150 13% 88%;
+  --ui-input: 150 11% 82%;
+  --muted-foreground: #64748b;
+  --destructive: #b42318;
   --ring: var(--brand-600);
+  --radius: 0.75rem;
 }
 
 html {
   scroll-behavior: smooth;
 }
 body {
-  color: var(--foreground);
   background: var(--sand);
   font-family: var(--font-sans), "Noto Sans Thai", Tahoma, ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -57,10 +61,22 @@ body {
 }
 
 @layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
   /* Consistent keyboard focus ring across every interactive element. */
   :focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: 2px;
+  }
+
+  button:not(:disabled), [role="button"]:not(:disabled) {
+    cursor: pointer;
   }
 }
 

@@ -3,8 +3,65 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { CheckCircle2, Loader2, TriangleAlert } from "lucide-react";
 import { getOrCreateSession, track, trackFormSubmit } from "@/lib/tracking";
 import { PRODUCTS, findGrade } from "@/lib/products-data";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+
+const PRODUCT_OPTIONS = [
+  {
+    group: "ABS",
+    items: [
+      "ABS — Black Injection",
+      "ABS — Natural / Off-white",
+      "ABS — White (appliance)",
+      "ABS — Grey (auto interior)",
+      "ABS — Flame Retardant V-0",
+    ],
+  },
+  {
+    group: "HIPS",
+    items: [
+      "HIPS — White (refrigerator liner)",
+      "HIPS — Natural (thermoforming)",
+      "HIPS — Black (E&E housings)",
+      "HIPS — Mixed color regrind",
+    ],
+  },
+  {
+    group: "PP",
+    items: [
+      "PP — Black Injection",
+      "PP — Natural Raffia",
+      "PP — Copolymer for Crates",
+      "PP — Talc 20% Filled",
+      "PP — Fiber Spinning",
+    ],
+  },
+  {
+    group: "GPPS",
+    items: [
+      "GPPS — Crystal Clear Injection",
+      "GPPS — Sheet Extrusion",
+      "GPPS — Audio / CD Case Grade",
+      "GPPS — Mixed color regrind",
+    ],
+  },
+] as const;
 
 export default function ContactForm() {
   const t = useTranslations("contact.form");
@@ -14,7 +71,6 @@ export default function ContactForm() {
   const focusedFields = useRef<Set<string>>(new Set());
   const intentTracked = useRef(false);
 
-  // Prefill from ?product=abs and ?grade=ABS-BK-IN
   const initialProductSlug = search?.get("product") ?? "";
   const initialGradeCode = search?.get("grade") ?? "";
   const initialSample = search?.get("sample") ?? "";
@@ -25,8 +81,8 @@ export default function ContactForm() {
       if (hit) return `${hit.product.category} — ${hit.grade.code} (${hit.grade.process})`;
     }
     if (initialProductSlug) {
-      const p = PRODUCTS.find((p) => p.slug === initialProductSlug);
-      if (p) return `${p.category} — General`;
+      const product = PRODUCTS.find((item) => item.slug === initialProductSlug);
+      if (product) return `${product.category} — General`;
     }
     return "";
   })();
@@ -44,7 +100,6 @@ export default function ContactForm() {
     return "";
   })();
 
-  // Track inquiry intent (someone landed on form with a product / grade preselected)
   useEffect(() => {
     if (intentTracked.current) return;
     if (initialProductSlug || initialGradeCode || initialSample) {
@@ -61,8 +116,8 @@ export default function ContactForm() {
     }
   }, [initialProductSlug, initialGradeCode, initialSample]);
 
-  function onFieldFocus(e: React.FocusEvent<HTMLFormElement>) {
-    const target = e.target as unknown as { name?: string };
+  function onFieldFocus(event: React.FocusEvent<HTMLFormElement>) {
+    const target = event.target as unknown as { name?: string };
     const name = target.name;
     if (!name || focusedFields.current.has(name)) return;
     focusedFields.current.add(name);
@@ -73,13 +128,13 @@ export default function ContactForm() {
     });
   }
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
     setStatus("submitting");
 
-    const formData = new FormData(e.currentTarget);
+    const formData = new FormData(event.currentTarget);
     const data: Record<string, string> = Object.fromEntries(
-      Array.from(formData.entries()).map(([k, v]) => [k, String(v)])
+      Array.from(formData.entries()).map(([key, value]) => [key, String(value)])
     );
     data.sessionId = getOrCreateSession();
 
@@ -90,19 +145,19 @@ export default function ContactForm() {
     if (initialGradeCode) data.grade = initialGradeCode;
 
     try {
-      const res = await fetch("/api/inquiry", {
+      const response = await fetch("/api/inquiry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      if (!res.ok) throw new Error("submit_failed");
+      if (!response.ok) throw new Error("submit_failed");
       trackFormSubmit("inquiry", {
         product: data.product,
         volume: data.volume,
         grade: initialGradeCode || undefined,
       });
       setStatus("success");
-      e.currentTarget.reset();
+      event.currentTarget.reset();
     } catch {
       setStatus("error");
     }
@@ -110,128 +165,145 @@ export default function ContactForm() {
 
   if (status === "success") {
     return (
-      <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-6 text-center">
-        <div className="text-4xl mb-3">✅</div>
-        <h3 className="text-xl font-bold text-emerald-900 mb-2">{t("successTitle")}</h3>
-        <p className="text-emerald-800">{t("successBody")}</p>
-      </div>
+      <Alert className="border-emerald-200 bg-emerald-50 p-5 text-emerald-950">
+        <CheckCircle2 className="h-5 w-5 text-emerald-700" aria-hidden="true" />
+        <AlertTitle className="text-base font-bold">{t("successTitle")}</AlertTitle>
+        <AlertDescription className="text-emerald-800">{t("successBody")}</AlertDescription>
+      </Alert>
     );
   }
 
   return (
-    <form className="space-y-4" onSubmit={onSubmit} onFocus={onFieldFocus} ref={formRef}>
+    <form className="space-y-5" onSubmit={onSubmit} onFocus={onFieldFocus} ref={formRef}>
       <label className="absolute -left-[9999px] h-px w-px overflow-hidden" aria-hidden="true">
         Website
-        <input name="website" tabIndex={-1} autoComplete="off" />
+        <Input name="website" tabIndex={-1} autoComplete="off" />
       </label>
+
       {initialGradeCode && (
-        <div className="bg-emerald-50 border border-emerald-200 rounded-lg px-4 py-3 text-sm text-emerald-800">
-          <strong>{t("prefillNotice")}</strong> {initialGradeCode}
-        </div>
+        <Alert className="border-emerald-200 bg-emerald-50 text-emerald-900">
+          <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
+          <AlertTitle>{t("prefillNotice")}</AlertTitle>
+          <AlertDescription className="font-mono text-emerald-800">{initialGradeCode}</AlertDescription>
+        </Alert>
       )}
 
-      <div className="grid sm:grid-cols-2 gap-4">
-        <Field name="name" label={t("name")} required />
-        <Field name="company" label={t("company")} />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field name="name" label={t("name")} required autoComplete="name" />
+        <Field name="company" label={t("company")} autoComplete="organization" />
       </div>
-      <div className="grid sm:grid-cols-2 gap-4">
-        <Field name="email" type="email" label={t("email")} required />
-        <Field name="phone" type="tel" label={t("phone")} placeholder="+84 / +62 / +66 / +60 · WhatsApp" />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field name="email" type="email" label={t("email")} required autoComplete="email" />
+        <Field
+          name="phone"
+          type="tel"
+          label={t("phone")}
+          placeholder="+84 / +62 / +66 / +60 · WhatsApp"
+          autoComplete="tel"
+        />
       </div>
-      <div className="grid sm:grid-cols-2 gap-4">
-        <Field name="country" label={t("country")} required />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field name="country" label={t("country")} required autoComplete="country-name" />
         <Field name="port" label={t("port")} placeholder="Cat Lai, Tanjung Priok, Laem Chabang" />
       </div>
 
-      <div>
-        <label className="block text-sm font-semibold text-slate-700 mb-1">{t("product")} *</label>
-        <select
-          name="product"
-          required
-          defaultValue={initialProductLabel}
-          className="input-field"
-        >
-          <option value="">{t("productPlaceholder")}</option>
-          {initialProductLabel && (
-            <option value={initialProductLabel}>{initialProductLabel}</option>
-          )}
-          <optgroup label="ABS">
-            <option>ABS — Black Injection</option>
-            <option>ABS — Natural / Off-white</option>
-            <option>ABS — White (appliance)</option>
-            <option>ABS — Grey (auto interior)</option>
-            <option>ABS — Flame Retardant V-0</option>
-          </optgroup>
-          <optgroup label="HIPS">
-            <option>HIPS — White (refrigerator liner)</option>
-            <option>HIPS — Natural (thermoforming)</option>
-            <option>HIPS — Black (E&E housings)</option>
-            <option>HIPS — Mixed color regrind</option>
-          </optgroup>
-          <optgroup label="PP">
-            <option>PP — Black Injection</option>
-            <option>PP — Natural Raffia</option>
-            <option>PP — Copolymer for Crates</option>
-            <option>PP — Talc 20% Filled</option>
-            <option>PP — Fiber Spinning</option>
-          </optgroup>
-          <optgroup label="GPPS">
-            <option>GPPS — Crystal Clear Injection</option>
-            <option>GPPS — Sheet Extrusion</option>
-            <option>GPPS — Audio / CD Case Grade</option>
-            <option>GPPS — Mixed color regrind</option>
-          </optgroup>
-          <option>Other / Custom Compound</option>
-        </select>
+      <div className="space-y-1.5">
+        <Label htmlFor="product-trigger">{t("product")} *</Label>
+        <Select name="product" required defaultValue={initialProductLabel || undefined}>
+          <SelectTrigger id="product-trigger" className="h-11 rounded-lg bg-white">
+            <SelectValue placeholder={t("productPlaceholder")} />
+          </SelectTrigger>
+          <SelectContent className="max-h-80">
+            {initialProductLabel && (
+              <>
+                <SelectGroup>
+                  <SelectLabel>{t("prefillNotice")}</SelectLabel>
+                  <SelectItem value={initialProductLabel}>{initialProductLabel}</SelectItem>
+                </SelectGroup>
+                <SelectSeparator />
+              </>
+            )}
+            {PRODUCT_OPTIONS.map((group, groupIndex) => (
+              <SelectGroup key={group.group}>
+                {groupIndex > 0 && <SelectSeparator />}
+                <SelectLabel>{group.group}</SelectLabel>
+                {group.items.map((item) => (
+                  <SelectItem key={item} value={item}>
+                    {item}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            ))}
+            <SelectSeparator />
+            <SelectItem value="Other / Custom Compound">Other / Custom Compound</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
-      <div className="grid sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-1">{t("volume")} *</label>
-          <select name="volume" required className="input-field">
-            <option value="">{t("volumePlaceholder")}</option>
-            <option>{t("volumeOpts.sample")}</option>
-            <option>{t("volumeOpts.small")}</option>
-            <option>{t("volumeOpts.medium")}</option>
-            <option>{t("volumeOpts.large")}</option>
-            <option>{t("volumeOpts.monthly")}</option>
-          </select>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label htmlFor="volume-trigger">{t("volume")} *</Label>
+          <Select name="volume" required>
+            <SelectTrigger id="volume-trigger" className="h-11 rounded-lg bg-white">
+              <SelectValue placeholder={t("volumePlaceholder")} />
+            </SelectTrigger>
+            <SelectContent>
+              {(["sample", "small", "medium", "large", "monthly"] as const).map((option) => {
+                const label = t(`volumeOpts.${option}`);
+                return (
+                  <SelectItem key={option} value={label}>
+                    {label}
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
         </div>
-        <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-1">{t("incoterms")}</label>
-          <select name="incoterms" className="input-field">
-            <option>FOB Ningbo</option>
-            <option>CIF</option>
-            <option>CFR</option>
-            <option>EXW</option>
-          </select>
+        <div className="space-y-1.5">
+          <Label htmlFor="incoterms-trigger">{t("incoterms")}</Label>
+          <Select name="incoterms" defaultValue="FOB Ningbo">
+            <SelectTrigger id="incoterms-trigger" className="h-11 rounded-lg bg-white">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {["FOB Ningbo", "CIF", "CFR", "EXW"].map((term) => (
+                <SelectItem key={term} value={term}>
+                  {term}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
-      <div>
-        <label className="block text-sm font-semibold text-slate-700 mb-1">{t("message")}</label>
-        <textarea
+      <div className="space-y-1.5">
+        <Label htmlFor="message">{t("message")}</Label>
+        <Textarea
+          id="message"
           name="message"
-          rows={4}
+          rows={5}
           placeholder={t("messagePh")}
           defaultValue={initialMessage}
-          className="input-field"
+          className="min-h-32 resize-y rounded-lg bg-white"
         />
       </div>
 
-      <button
+      <Button
         type="submit"
         disabled={status === "submitting"}
-        className="w-full bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white font-semibold py-3.5 rounded-lg transition-colors"
+        className="h-12 w-full rounded-xl bg-brand-700 text-base font-semibold shadow-soft hover:bg-brand-800"
         data-track="cta_form_submit"
       >
+        {status === "submitting" && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
         {status === "submitting" ? t("submitting") : t("submit")}
-      </button>
+      </Button>
 
       {status === "error" && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-800">
-          <strong>{t("errorTitle")}</strong> {t("errorBody")}
-        </div>
+        <Alert variant="destructive" className="border-red-200 bg-red-50">
+          <TriangleAlert className="h-4 w-4" aria-hidden="true" />
+          <AlertTitle>{t("errorTitle")}</AlertTitle>
+          <AlertDescription>{t("errorBody")}</AlertDescription>
+        </Alert>
       )}
     </form>
   );
@@ -243,24 +315,28 @@ function Field({
   type = "text",
   required = false,
   placeholder,
+  autoComplete,
 }: {
   name: string;
   label: string;
   type?: string;
   required?: boolean;
   placeholder?: string;
+  autoComplete?: string;
 }) {
   return (
-    <div>
-      <label className="block text-sm font-semibold text-slate-700 mb-1">
+    <div className="space-y-1.5">
+      <Label htmlFor={name}>
         {label} {required && "*"}
-      </label>
-      <input
+      </Label>
+      <Input
+        id={name}
         type={type}
         name={name}
         required={required}
         placeholder={placeholder}
-        className="input-field"
+        autoComplete={autoComplete}
+        className="h-11 rounded-lg bg-white"
       />
     </div>
   );
