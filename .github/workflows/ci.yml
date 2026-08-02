@@ -32,7 +32,12 @@ jobs:
         cache: npm
 
     - name: Install dependencies
-      run: npm ci
+      # package-lock.json 由 npm 11 生成，含 npm 10 无法解析的 libc 元数据。
+      # 与 deploy.yml 保持同一个 npm 版本，避免 CI 通过但发布失败（或反之）。
+      run: |
+        npm install --global npm@11.12.1 --no-audit --no-fund
+        npm --version
+        npm ci
 
     - name: Generate Prisma client
       # 测试和构建都引用生成的 Prisma 客户端，必须先跑（顺序不能反）
