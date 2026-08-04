@@ -24,5 +24,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }
   }
 
+  sitemap.push({
+    url: localizedUrl("en", "/mvp/sanding-disc-organizer"),
+    lastModified: new Date(),
+    changeFrequency: "weekly",
+    priority: 0.7,
+  });
+
   return sitemap;
 }

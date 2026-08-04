@@ -9,6 +9,7 @@
 - `go-backend` 是唯一共享重后端。询盘完整配置时由 Go 托管，否则回退 Prisma；Prisma 还拥有本产品埋点、session、报价和样品。
 - GreenPoly 自己拥有访客行为数据；对 Go 只暴露脱敏、低计数抑制后的内部营销聚合。
 - 报价、样品确认、邮件/WhatsApp 草稿和工厂交接文本都只供人审阅、复制和手工发送。
+- 商业 MVP 潜客研究由本产品本地 `MvpProspect` 保存，和买家主动提交的 `Inquiry` 分离；评分、成本和停止/继续门槛是透明纯规则，开发信只生成草稿。
 - 产品图是场景示意，不是证书、COA、库存或具体批次证据。
 
 ## 目录职责
@@ -20,6 +21,10 @@
 | application | 当前询盘创建、列表、状态更新、报价/样品编排散落在页面、Route Handler 和 `src/lib/sales-tools.ts`/`sales-api.ts`。 | 用例放 `src/application/inquiries/` 与 `src/application/sales/`，例如 create/list/update inquiry、update quote、confirm sample；用例只依赖 domain/ports。 |
 | domain / ports | `src/lib/sales-tools.ts` 是纯销售规则候选，包含报价计算、状态迁移、样品版本、待办和跟进草稿；`marketing-stats.ts` 含纯聚合规则，`products-data.ts` 是产品目录真值。 | 按 `src/domain/inquiries/`、`sales/`、`marketing/` 拆分纯规则；`InquiryRepository`、报价/样品仓储和时钟放 `src/domain/ports/`。domain 不导入 Next、React、Prisma 或网络客户端。 |
 | adapters | `src/lib/db.ts`/Prisma 是本地持久化 adapter，`src/lib/go-backend.ts` 是 Go adapter，`auth.ts`、`tracking.ts`、`geo.ts`、`sales-records.ts` 与生产配置是框架/基础设施适配。 | 逐步收口到 `src/adapters/persistence/`、`go/`、`auth/`、`analytics/`；保留现有 schema 和外部契约，adapter 实现 ports。 |
+
+MVP 验证纵向切片遵守同一依赖方向：`/admin/mvp` 与同源 Route Handler 只调用
+`MvpProspectService`，service 依赖 `MvpProspectRepository` 端口，Prisma adapter 负责本地持久化；
+`src/domain/mvp/validation.ts` 独立计算适配分数、成本和实验闸门，不导入 React、Next 或 Prisma。
 
 ## 依赖方向
 
@@ -43,6 +48,7 @@ Next delivery → application → domain/ports ← Prisma/Go/analytics adapters
   本地存储只服务本产品现有边界。
 - 禁止 domain 导入 Next/React/Prisma，禁止 adapter 反向调用组件。
 - 禁止自动发送报价、跟进草稿、样品确认或工厂交接信息；所有外发都要人工复核。
+- 禁止 MVP 工作台自动抓取需要登录/验证码的数据、批量群发开发信、自动承诺价格或把效果图和规划参数描述成已验证样品。
 - 禁止把低计数访客桶、原始 IP、session、referrer、UTM 或询盘明细暴露给内部聚合消费者。
 - 禁止把示意图、模拟数据、弱开发账号描述成真实批次、检测、库存或生产凭据。
 - 数据迁移、公开部署、真实交易或生产凭据使用必须另经 Human 确认。

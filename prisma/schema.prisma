@@ -108,6 +108,41 @@ model SampleConfirmation {
 }
 
 // ============================================================
+// MvpProspect — operator-owned buyer research for product validation
+// This is deliberately separate from Inquiry: prospects are researched by the
+// operator, while inquiries are submitted by buyers through the public site.
+// ============================================================
+model MvpProspect {
+  id                   String   @id @default(cuid())
+  company              String
+  contactName          String?
+  contactEmail         String?
+  contactUrl           String?
+  country              String?
+  sourceChannel        String
+  shopUrl              String?
+  sellsSandingDiscs    Boolean  @default(false)
+  sellsToolStorage     Boolean  @default(false)
+  evidence             String?
+  stage                String   @default("RESEARCH")
+  score                Int      @default(0)
+  scoreReasons         String?
+  targetPriceUsd       Float?
+  estimatedMonthlySets Int?
+  nextAction           String?
+  nextActionAt         DateTime?
+  lastContactedAt      DateTime?
+  notes                String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([stage])
+  @@index([score])
+  @@index([nextActionAt])
+  @@index([updatedAt])
+}
+
+// ============================================================
 // Event — tracking events from the front-end SDK
 // ============================================================
 model Event {
