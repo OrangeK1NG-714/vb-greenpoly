@@ -32,6 +32,7 @@ Next.js 16 全栈应用：公开站（多语言）+ 管理后台 + 自定义埋�
 - **Dashboard**：KPI 卡片 + Top 页面 + Top 国家 + 询盘状态分布
 - **Inquiries**：列表 + 状态筛选（NEW/CONTACTED/QUOTED/NEGOTIATING/WON/LOST）+ 内联状态切换 + 详情页（**含完整 session 行为轨迹**）+ 销售内部备注
 - **Sales desk**：真实询盘待办队列 + 版本化报价护栏与 FOB/CIF 明细 + 样品确认卡 + 英/法/葡人工跟进草稿；报价、客户确认和工厂交接文本都只能复制，绝不自动发送。报价缺失项、人工发送后的跟进时点，以及超出目标确认日的样品版本会进入操作待办。
+- **MVP lab**：围绕 5 英寸砂纸片模块化收纳架运行 14 天商业验证；包含英文买家页、潜客数据库、透明适配评分、阶段指标、人工开发信草稿和单套成本闸门。潜客只保存运营者录入的公开商业信息，系统不抓取登录态数据、不自动外发，也不会把规划成本描述成工厂报价。
 - **Analytics**：转化漏斗 · 产品页热度 · Top CTA · 滚动深度分布 · 平均停留时长
 - **Traffic**：地理来源 · UTM · referrer · 语言分布
 
@@ -46,6 +47,17 @@ npm run dev    # http://localhost:3000
 
 **管理后台**：访问 `http://localhost:3000/admin/login`
 本地开发可使用 `.env.example` 中的种子账号；它只能用于本机。生产环境会拒绝默认密码、短于 12 个字符的管理员密码，以及弱于 32 个字符的 `AUTH_SECRET`。
+
+### 🧪 商业 MVP 验证
+
+- 买家验证页：`/mvp/sanding-disc-organizer`
+- 运营工作台：`/admin/mvp`
+- 潜客 API：`GET/POST /api/admin/mvp/prospects`、`PATCH /api/admin/mvp/prospects/:id`
+- 继续门槛：1 个条件订单，或至少 8 个回复且 3 个样品请求。
+- 停止门槛：联系 50 个合格潜客后回复少于 3 个。
+- 生产边界：没有样品证据不确认材料/容量/强度，没有订金、模具分摊或聚合试单量不开模。
+
+成本计算器默认值只是用于验证公式和成本红线。上线真实报价前，必须替换为回料批次、注塑加工、包装和物流的书面报价。
 
 ## 🔀 BFF 模式：询盘交给 go-backend（可选）
 
@@ -99,6 +111,7 @@ greenpoly/
 │   │   │       ├── inquiries/page.tsx    # 询盘列表
 │   │   │       ├── inquiries/[id]/       # 询盘详情 + session 轨迹
 │   │   │       ├── sales/page.tsx         # 销售待办 + 报价 + 跟进草稿
+│   │   │       ├── mvp/page.tsx           # 单品商业验证实验台
 │   │   │       ├── analytics/page.tsx    # 漏斗 + 产品热度
 │   │   │       ├── traffic/page.tsx      # 地理 + UTM
 │   │   │       └── layout.tsx            # auth + sidebar
